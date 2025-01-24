@@ -128,8 +128,8 @@ export MANPAGER="nvim +Man!"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh
-alias cfa="find . -type f -name '*.[ch]' -exec clang-format -style=LLVM -i {} \;"
-alias cfaf="find . -type f -name '*.[ch]' -exec clang-format -style=file -i {} \;"
+alias cfa="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=LLVM -i {} \;"
+alias cfaf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
 alias fetch-zshrc="curl -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/zshrc"
 alias zshrc="source ~/.zshrc"
 
