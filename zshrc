@@ -130,6 +130,7 @@ export MANPAGER="nvim +Man!"
 # alias ohmyzsh="mate ~/.oh-my-zsh
 alias cfmt-a="find . -regex '.*\.\(c\|h\)' -exec clang-format -style=file -i {} \;"
 alias fetch-zshrc="curl -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/zshrc"
+alias zshrc="source ~/.zshrc"
 
 # Load local aliases (if the file exists)
 if [ -f "$HOME/.zsh_local_aliases" ]; then
