@@ -1,3 +1,4 @@
+#! /bin/zsh
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -130,8 +131,9 @@ export MANPAGER="nvim +Man!"
 # alias ohmyzsh="mate ~/.oh-my-zsh
 alias cfa="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=LLVM -i {} \;"
 alias cfaf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
-alias fetch-zshrc="curl -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/zshrc"
+alias fetch-zshrc="curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to fetch .zshrc'"
 alias zshrc="source ~/.zshrc"
+alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 
 # Load local aliases (if the file exists)
 if [ -f "$HOME/.zsh_local_aliases" ]; then
