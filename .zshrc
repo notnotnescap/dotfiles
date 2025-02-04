@@ -136,8 +136,8 @@ alias zshrc="source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 
 # Load local aliases (if the file exists)
-if [ -f "$HOME/.zsh_local_aliases" ]; then
-    source "$HOME/.zsh_local_aliases"
+if [ -f "$HOME/.zshrc_local" ]; then
+    source "$HOME/.zshrc_local"
 fi
 
 # Load thefuck
