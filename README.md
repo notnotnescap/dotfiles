@@ -1,3 +1,3 @@
 # Dotfiles
 
-This is an attempt to organize my dotfiles and make it easier to hop to another distro or machine. They are by no means perfect and are pretty specific to my workflow which probably won't work for you. 
+Makes it easy for me to set up new machines with my preferred settings. Feel free to get inspired but I would advise building your own from scratch.
