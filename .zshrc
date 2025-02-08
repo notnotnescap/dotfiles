@@ -96,6 +96,31 @@ getmy() {
     fi
 }
 
+# make a dir and move into it in one command
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# move out of current dir and remove it with confirmation
+rmcd() {
+    local current_dir=$(pwd)
+    read -r "a? Remove $current_dir ? [y/n] "
+    if [[ "$a" =~ ^[Yy]$ ]]
+    then
+        cd ..
+        if command -v trash > /dev/null 2>&1; then
+            trash "$current_dir"
+        else
+            read -r "b? 'trash' command not found. Use 'rm -rf' instead? [y/n] "
+            if [[ "$b" =~ ^[Yy]$ ]]; then
+                rm -rf "$current_dir"
+            else
+                echo "Aborted."
+            fi
+        fi
+    fi
+}
+
 
 # Load local aliases (if the file exists)
 if [ -f "$HOME/.zshrc_local" ]; then
