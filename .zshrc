@@ -59,12 +59,70 @@ fi
 export MANPAGER="nvim +Man!"
 
 # aliases
-alias cfa="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=LLVM -i {} \;"
-alias cfaf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
-alias zshrc-fetch="curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to fetch .zshrc'"
+alias cf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
 alias mkvenv="python3 -m venv venv ; source venv/bin/activate"
 alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to fetch .clang-format'"
+alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
+alias mkvenv="python3 -m venv venv && source venv/bin/activate"
+
+# custom functions
+
+# will pull certain files from the dotfiles repo
+getmy() {
+    if [ -z "$1" ]; then
+        echo "Usage: getmy <file>
+        Available files:
+        - zshrc
+        - clang-format cf
+        - gitignore gi)"
+        return 1
+    fi
+
+    if [ "$1" = "zshrc" ]; then
+        echo "Pulling .zshrc at $HOME/.zshrc..."
+        curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to pull .zshrc'
+        echo "Running zshrc..."
+        source ~/.zshrc
+        echo "Done."
+    fi
+
+    if [ "$1" = "clang-format" ] || [ "$1" = "cf" ]; then
+        curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to clone .clang-format'
+        echo "Done."
+    fi
+
+    if [ "$1" = "gitignore" ] || [ "$1" = "gi" ]; then
+        curl -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.gitignore || echo 'Failed to clone .gitignore'
+        echo "Done."
+    fi
+}
+
+# make a dir and move into it in one command
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# move out of current dir and remove it with confirmation
+rmcd() {
+    local current_dir=$(pwd)
+    read -r "a? Remove $current_dir ? [y/n] "
+    if [[ "$a" =~ ^[Yy]$ ]]
+    then
+        cd ..
+        if command -v trash > /dev/null 2>&1; then
+            trash "$current_dir"
+        else
+            read -r "b? 'trash' command not found. Use 'rm -rf' instead? [y/n] "
+            if [[ "$b" =~ ^[Yy]$ ]]; then
+                rm -rf "$current_dir"
+            else
+                echo "Aborted."
+            fi
+        fi
+    fi
+}
+
 
 # Load local aliases (if the file exists)
 if [ -f "$HOME/.zshrc_local" ]; then
