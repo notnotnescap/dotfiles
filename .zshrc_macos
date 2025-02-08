@@ -1,4 +1,5 @@
 #! /bin/zsh
+# note: copy this to ~/.zshrc_local
 
 # adb path
 export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
