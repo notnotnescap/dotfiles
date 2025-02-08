@@ -63,7 +63,7 @@ alias cfa="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=LLV
 alias cfaf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc-fetch="curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to fetch .zshrc'"
 alias zshrc="source ~/.zshrc"
-alias mkvenv="python3 -m venv venv && source venv/bin/activate"
+alias mkvenv="python3 -m venv venv ; source venv/bin/activate"
 alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to fetch .clang-format'"
 
 # Load local aliases (if the file exists)
