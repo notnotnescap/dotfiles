@@ -29,12 +29,12 @@ source $ZSH/oh-my-zsh.sh
 
 # Code::Stats
 # Load Code::Stats API key from a separate file
-if [ "$VS_CODE_TERMINAL" != "true" ]; then
+if [ "$VS_CODE_TERMINAL" = "true" ]; then
+    echo "\033[0;33mVS Code terminal detected, Code::Stats plugin rejected\033[0m"
+else
     if [ -f "$HOME/.codestats_api_key" ]; then
         export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
     fi
-else
-    echo "\033[0;33mVS Code terminal detected, Code::Stats plugin rejected\033[0m"
 fi
 
 # load zgen
@@ -42,7 +42,7 @@ source "${HOME}/.zgen/zgen.zsh"
 # if the init script doesn't exist
 if ! zgen saved; then
     # Code::Stats plugin
-    zgen load git@gitlab.com:code-stats/code-stats-zsh.git
+    # zgen load git@gitlab.com:code-stats/code-stats-zsh.git
 
     # load oh-my-zsh
     zgen oh-my-zsh
@@ -54,6 +54,8 @@ if ! zgen saved; then
     # generate the init script from plugins above
     zgen save
 fi
+# local Code::Stats plugin (for hopefully faster loading)
+source "${HOME}/.zsh/plugins/codestats.zsh"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 export MANPAGER="nvim +Man!"

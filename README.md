@@ -4,6 +4,6 @@ Makes it easy for me to set up new machines with my preferred settings. Feel fre
 
 # Quick Setup
 
-```bash
-curl -Lks https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/setup.sh
+```zsh
+curl -fsSL https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/setup.sh | zsh
 ```
