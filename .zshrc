@@ -69,6 +69,9 @@ alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 
+# variables
+export temp="$HOME/Downloads/temp"
+
 # custom functions
 
 # will pull certain files from the dotfiles repo
