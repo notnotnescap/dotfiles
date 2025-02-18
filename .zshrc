@@ -60,8 +60,15 @@ source "${HOME}/.zsh/plugins/codestats.zsh"
 # export MANPATH="/usr/local/man:$MANPATH"
 export MANPAGER="nvim +Man!"
 
+# directories
+export tempdir="$HOME/Downloads/temp"
+export ghdir="$HOME/Documents/Github"
+
+alias gh="cd $ghdir; pwd"
+alias temp="cd $tempdir; pwd"
+
 # aliases
-alias cf="find . -type f -name '*.[ch]' -exec clang-format --verbose -style=file -i {} \;"
+alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
 alias mkvenv="python3 -m venv venv ; source venv/bin/activate"
 alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to fetch .clang-format'"
@@ -69,8 +76,6 @@ alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 
-# variables
-export temp="$HOME/Downloads/temp"
 
 # custom functions
 
