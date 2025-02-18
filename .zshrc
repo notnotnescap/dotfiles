@@ -63,9 +63,11 @@ export MANPAGER="nvim +Man!"
 # directories
 export tempdir="$HOME/Downloads/temp"
 export ghdir="$HOME/Documents/Github"
+export dotfilesdir="$ghdir/dotfiles"
 
 alias gh="cd $ghdir; pwd"
 alias temp="cd $tempdir; pwd"
+alias dotfiles="cd $dotfilesdir; pwd"
 
 # aliases
 alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
@@ -75,6 +77,7 @@ alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotn
 alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
+alias ls="ls -la"
 
 
 # custom functions
