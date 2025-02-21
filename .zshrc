@@ -7,21 +7,6 @@ export ZSH="$HOME/.oh-my-zsh"
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
 
-# command auto-correction (will for example correct 'sl' to 'ls')
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-
 # Loading plugins
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
@@ -57,8 +42,11 @@ fi
 # local Code::Stats plugin (for hopefully faster loading)
 source "${HOME}/.zsh/plugins/codestats.zsh"
 
-# export MANPATH="/usr/local/man:$MANPATH"
+# Settings
 export MANPAGER="nvim +Man!"
+HISTSIZE=15000  # keep at most 15k commands in memory
+SAVEHIST=10000  # keep at most 10k commands in HISTFILE
+HISTFILE=~/.zsh_history
 
 # directories
 export tempdir="$HOME/Downloads/temp"
@@ -77,8 +65,6 @@ alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotn
 alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
-alias ls="ls -la"
-
 
 # custom functions
 
