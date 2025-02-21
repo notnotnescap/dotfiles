@@ -66,6 +66,11 @@ alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 
+# macos specific aliases
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias o="open ."
+fi
+
 # custom functions
 
 # will pull certain files from the dotfiles repo
