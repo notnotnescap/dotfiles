@@ -49,12 +49,12 @@ SAVEHIST=10000  # keep at most 10k commands in HISTFILE
 HISTFILE=~/.zsh_history
 
 # directories
-export tempdir="$HOME/Downloads/temp"
-export ghdir="$HOME/Documents/Github"
+export tmpdir="/var/tmp"
+export ghdir="$HOME/dev/Github"
 export dotfilesdir="$ghdir/dotfiles"
 
 alias gh="cd $ghdir; pwd"
-alias temp="cd $tempdir; pwd"
+alias tmp="cd $tmpdir; pwd"
 alias dotfiles="cd $dotfilesdir; pwd"
 
 # aliases
