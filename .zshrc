@@ -145,3 +145,6 @@ fi
 
 # Load thefuck
 eval $(thefuck --alias)
+
+# Load zoxide
+eval "$(zoxide init zsh)"
