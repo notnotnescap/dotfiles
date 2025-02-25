@@ -50,11 +50,13 @@ HISTFILE=~/.zsh_history
 
 # directories
 export tmpdir="/var/tmp"
+export devdir="$HOME/dev"
 export ghdir="$HOME/dev/Github"
 export dotfilesdir="$ghdir/dotfiles"
 
-alias gh="cd $ghdir; pwd"
 alias tmp="cd $tmpdir; pwd"
+alias dev="cd $devdir; pwd"
+alias gh="cd $ghdir; pwd"
 alias dotfiles="cd $dotfilesdir; pwd"
 
 # aliases
@@ -66,9 +68,26 @@ alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 
-# macos specific aliases
+# macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
     alias o="open ."
+
+    # fix cunit path
+    export CPATH=/opt/homebrew/include:$CPATH
+    export LIBRARY_PATH=/opt/homebrew/lib:$LIBRARY_PATH
+    # fix adb path
+    export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
+
+    # brew uu to update & upgrade faster
+    brew() {
+        if [ "$1" = "uu" ]; then
+            command brew update;
+            command brew upgrade;
+        else
+            command brew "$@"
+        fi
+    }
+
 fi
 
 # custom functions
@@ -80,7 +99,8 @@ getmy() {
         Available files:
         - zshrc
         - clang-format cf
-        - gitignore gi)"
+        - gitignore gi
+        - gitconfig gc"
         return 1
     fi
 
@@ -89,17 +109,23 @@ getmy() {
         curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to pull .zshrc'
         echo "Running zshrc..."
         source ~/.zshrc
-        echo "Done."
+        echo "Done"
     fi
 
     if [ "$1" = "clang-format" ] || [ "$1" = "cf" ]; then
         curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to clone .clang-format'
-        echo "Done."
+        echo "Done"
     fi
 
     if [ "$1" = "gitignore" ] || [ "$1" = "gi" ]; then
         curl -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.gitignore || echo 'Failed to clone .gitignore'
-        echo "Done."
+        echo "Done"
+    fi
+
+    if [ "$1" = "gitconfig"] || [ "$1" = "gc" ]; then
+        echo "Pulling .gitconfig at $HOME/.gitconfig..."
+        curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.gitconfig || echo 'Failed to pull .zshrc'
+        echo "Done"
     fi
 }
 

@@ -1,0 +1,15 @@
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[user]
+	name = nescapp
+	email = 97590612+nescapp@users.noreply.github.com
+	signingkey = /Users/nescap/.ssh/id_rsa.pub
+[core]
+	excludesfile = /Users/nescap/.gitignore_global
+[rerere]
+	enabled = true
+[gpg]
+	format = ssh
