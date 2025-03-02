@@ -60,10 +60,10 @@ alias gh="cd $ghdir; pwd"
 alias dotfiles="cd $dotfilesdir; pwd"
 
 # aliases
+alias c="clear"
+alias ncdu="ncdu --color dark"
 alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
-alias mkvenv="python3 -m venv venv ; source venv/bin/activate"
-alias gen-cf="curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to fetch .clang-format'"
 alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
