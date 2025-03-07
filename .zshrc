@@ -8,7 +8,7 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 
 # Loading plugins
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -31,7 +31,6 @@ if ! zgen saved; then
 
     # load oh-my-zsh
     zgen oh-my-zsh
-    zgen oh-my-zsh plugins/git
     zgen oh-my-zsh plugins/zsh-autosuggestions
     zgen oh-my-zsh plugins/zsh-syntax-highlighting
     zgen oh-my-zsh plugins/web-search
@@ -71,6 +70,35 @@ alias zshrc="source ~/.zshrc"
 alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
+
+# git aliases
+alias ggpur='ggu'
+alias g='git'
+alias ga='git add'
+alias gaa='git add --all'
+alias gapa='git add --patch'
+alias gau='git add --update'
+alias gav='git add --verbose'
+alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'
+alias gam='git am'
+alias gama='git am --abort'
+alias gamc='git am --continue'
+alias gamscp='git am --show-current-patch'
+alias gams='git am --skip'
+alias gap='git apply'
+alias gapt='git apply --3way'
+alias gbs='git bisect'
+alias gbsb='git bisect bad'
+alias gbsg='git bisect good'
+alias gbsn='git bisect new'
+alias gbso='git bisect old'
+alias gbsr='git bisect reset'
+alias gbss='git bisect start'
+alias gbl='git blame -w'
+alias gb='git branch'
+alias gba='git branch --all'
+alias gbd='git branch --delete'
+alias gbD='git branch --delete --force'
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
