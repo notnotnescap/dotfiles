@@ -62,6 +62,10 @@ alias dotfiles="cd $dotfilesdir; pwd"
 # aliases
 alias c="clear"
 alias ncdu="ncdu --color dark"
+alias ez="eza -a --group-directories-first"
+alias e="eza -la --group-directories-first"
+alias ls="ez"
+alias l="e"
 alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
 alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
@@ -80,7 +84,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 
     # brew uu to update & upgrade faster
     brew() {
-        if [ "$1" = "uu" ]; then
+        if [ "$1" = "uu" ] || [ "$1" = "uwu" ]; then
             command brew update;
             command brew upgrade;
         else
