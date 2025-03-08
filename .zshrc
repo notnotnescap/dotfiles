@@ -8,7 +8,11 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 
 # Loading plugins
-plugins=(zsh-autosuggestions zsh-syntax-highlighting)
+
+# install : git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# install : git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 source $ZSH/oh-my-zsh.sh
 
@@ -22,23 +26,7 @@ else
     fi
 fi
 
-# load zgen
-source "${HOME}/.zgen/zgen.zsh"
-# if the init script doesn't exist
-if ! zgen saved; then
-    # Code::Stats plugin
-    # zgen load git@gitlab.com:code-stats/code-stats-zsh.git
-
-    # load oh-my-zsh
-    zgen oh-my-zsh
-    zgen oh-my-zsh plugins/zsh-autosuggestions
-    zgen oh-my-zsh plugins/zsh-syntax-highlighting
-    zgen oh-my-zsh plugins/web-search
-
-    # generate the init script from plugins above
-    zgen save
-fi
-# local Code::Stats plugin (for hopefully faster loading)
+# local Code::Stats plugin
 source "${HOME}/.zsh/plugins/codestats.zsh"
 
 # Settings
