@@ -1,11 +1,163 @@
 #! /bin/zsh
 
-# Path to oh-my-zsh
-export ZSH="$HOME/.oh-my-zsh"
-
 # Load zsh theme
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+
+zmodload zsh/system
+autoload -Uz is-at-least
+
+function _register_handler {
+  setopt localoptions noksharrays
+  typeset -ga _async_functions
+  if [[ -z "$1" ]] || (( ! ${+functions[$1]} )) || (( ${_async_functions[(Ie)$1]} )); then
+    return
+  fi
+  _async_functions+=("$1")
+  if (( ! ${precmd_functions[(Ie)_async_request]} )) && (( ${+functions[_async_request]})); then
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _async_request
+  fi
+}
+
+function _async_request {
+  local -i ret=$?
+  typeset -gA _ASYNC_FDS _ASYNC_PIDS _ASYNC_OUTPUT
+  local handler
+  for handler in ${_async_functions}; do
+    (( ${+functions[$handler]} )) || continue
+    local fd=${_ASYNC_FDS[$handler]:--1}
+    local pid=${_ASYNC_PIDS[$handler]:--1}
+    if (( fd != -1 && pid != -1 )) && { true <&$fd } 2>/dev/null; then
+      exec {fd}<&-
+      zle -F $fd
+      if [[ -o MONITOR ]]; then
+        kill -TERM -$pid 2>/dev/null
+      else
+        kill -TERM $pid 2>/dev/null
+      fi
+    fi
+    _ASYNC_FDS[$handler]=-1
+    _ASYNC_PIDS[$handler]=-1
+    exec {fd}< <(
+      builtin echo ${sysparams[pid]}
+      () { return $ret }
+      $handler
+    )
+    _ASYNC_FDS[$handler]=$fd
+    is-at-least 5.8 || command true
+    read -u $fd "_ASYNC_PIDS[$handler]"
+    zle -F "$fd" _async_callback
+  done
+}
+
+function _async_callback() {
+  emulate -L zsh
+  local fd=$1
+  local err=$2
+  if [[ -z "$err" || "$err" == "hup" ]]; then
+    local handler="${(k)_ASYNC_FDS[(r)$fd]}"
+    local old_output="${_ASYNC_OUTPUT[$handler]}"
+    IFS= read -r -u $fd -d '' "_ASYNC_OUTPUT[$handler]"
+    if [[ "$old_output" != "${_ASYNC_OUTPUT[$handler]}" ]]; then
+      zle .reset-prompt
+      zle -R
+    fi
+    exec {fd}<&-
+  fi
+  zle -F "$fd"
+  _ASYNC_FDS[$handler]=-1
+  _ASYNC_PIDS[$handler]=-1
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _async_request
+
+function __git_prompt_git() {
+  GIT_OPTIONAL_LOCKS=0 command git "$@"
+}
+
+function _git_prompt_info() {
+  if ! __git_prompt_git rev-parse --git-dir &> /dev/null || [[ "$(__git_prompt_git config --get oh-my-zsh.hide-info 2>/dev/null)" == 1 ]]; then
+    return 0
+  fi
+  local ref
+  ref=$(__git_prompt_git symbolic-ref --short HEAD 2> /dev/null) || ref=$(__git_prompt_git describe --tags --exact-match HEAD 2> /dev/null) || ref=$(__git_prompt_git rev-parse --short HEAD 2> /dev/null) || return 0
+  local upstream
+  if (( ${+ZSH_THEME_GIT_SHOW_UPSTREAM} )); then
+    upstream=$(__git_prompt_git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}" 2>/dev/null) && upstream=" -> ${upstream}"
+  fi
+  echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref:gs/%/%%}${upstream:gs/%/%%}$(parse_git_dirty)${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+}
+
+function git_prompt_info() {
+  if [[ -n "${_ASYNC_OUTPUT[_git_prompt_info]}" ]]; then
+    echo -n "${_ASYNC_OUTPUT[_git_prompt_info]}"
+  fi
+}
+
+function git_prompt_status() {
+  if [[ -n "${_ASYNC_OUTPUT[_git_prompt_status]}" ]]; then
+    echo -n "${_ASYNC_OUTPUT[_git_prompt_status]}"
+  fi
+}
+
+function _defer_async_git_register() {
+  case "${PS1}:${PS2}:${PS3}:${PS4}:${RPROMPT}:${RPS1}:${RPS2}:${RPS3}:${RPS4}" in
+  *(\$\(git_prompt_info\)|\`git_prompt_info\`)*)
+    _register_handler _git_prompt_info
+    ;;
+  esac
+  case "${PS1}:${PS2}:${PS3}:${PS4}:${RPROMPT}:${RPS1}:${RPS2}:${RPS3}:${RPS4}" in
+  *(\$\(git_prompt_status\)|\`git_prompt_status\`)*)
+    _register_handler _git_prompt_status
+    ;;
+  esac
+  add-zsh-hook -d precmd _defer_async_git_register
+  unset -f _defer_async_git_register
+}
+
+precmd_functions=(_defer_async_git_register $precmd_functions)
+
+function parse_git_dirty() {
+  local STATUS
+  local -a FLAGS
+  FLAGS=('--porcelain')
+  if [[ "$(__git_prompt_git config --get oh-my-zsh.hide-dirty)" != "1" ]]; then
+    if [[ "${DISABLE_UNTRACKED_FILES_DIRTY:-}" == "true" ]]; then
+      FLAGS+='--untracked-files=no'
+    fi
+    case "${GIT_STATUS_IGNORE_SUBMODULES:-}" in
+      git)
+        ;;
+      *)
+        FLAGS+="--ignore-submodules=${GIT_STATUS_IGNORE_SUBMODULES:-dirty}"
+        ;;
+    esac
+    STATUS=$(__git_prompt_git status ${FLAGS} 2> /dev/null | tail -n 1)
+  fi
+  if [[ -n $STATUS ]]; then
+    echo "$ZSH_THEME_GIT_PROMPT_DIRTY"
+  else
+    echo "$ZSH_THEME_GIT_PROMPT_CLEAN"
+  fi
+}
+
+autoload -U colors && colors
+setopt prompt_subst
+
+ZSH_THEME_GIT_PROMPT_PREFIX="git:("
+ZSH_THEME_GIT_PROMPT_SUFFIX=")"
+ZSH_THEME_GIT_PROMPT_DIRTY="*"
+ZSH_THEME_GIT_PROMPT_CLEAN=""
+
+PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+PROMPT+=' $(git_prompt_info)'
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}%1{✗%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
+
+[[ -z "$LS_COLORS" ]] || zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # Loading plugins
 
@@ -14,7 +166,6 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # install : git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-source $ZSH/oh-my-zsh.sh
 
 # Code::Stats
 # Load Code::Stats API key from a separate file
