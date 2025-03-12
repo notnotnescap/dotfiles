@@ -38,7 +38,7 @@ HISTFILE=~/.zsh_history
 # directories
 export tmpdir="/var/tmp"
 export devdir="$HOME/dev"
-export ghdir="$HOME/dev/Github"
+export ghdir="$HOME/dev/GitHub"
 export dotfilesdir="$ghdir/dotfiles"
 
 alias tmp="cd $tmpdir; pwd"
