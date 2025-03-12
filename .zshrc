@@ -23,11 +23,11 @@ if [ "$VS_CODE_TERMINAL" = "true" ]; then
 else
     if [ -f "$HOME/.codestats_api_key" ]; then
         export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
+        # local Code::Stats plugin
+        source "${HOME}/.zsh/plugins/codestats.zsh"
     fi
 fi
 
-# local Code::Stats plugin
-source "${HOME}/.zsh/plugins/codestats.zsh"
 
 # Settings
 export MANPAGER="nvim +Man!"
