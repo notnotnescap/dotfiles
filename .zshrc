@@ -315,8 +315,10 @@ getmy() {
 
     if [ "$1" = "batconfig" ]; then
         echo "Pulling .config/bat/* at $HOME/.config/bat/..."
-        mkdir -p ~/.config/bat
+        mkdir -p ~/.config/bat/themes
         curl -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
+        curl -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
+        bat cache --build
         echo "Done"
     fi
 }
