@@ -175,7 +175,8 @@ else
     if [ -f "$HOME/.codestats_api_key" ]; then
         export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
         # local Code::Stats plugin
-        source "${HOME}/.zsh/plugins/codestats.zsh"
+        # install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
+        source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
     fi
 fi
 
