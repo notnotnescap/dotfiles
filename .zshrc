@@ -291,7 +291,7 @@ getmy() {
 
     if [ "$1" = "zshrc" ]; then
         echo "Pulling .zshrc at $HOME/.zshrc..."
-        curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
+        curl -H 'Cache-Control: no-cache' -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
         echo "Running zshrc..."
         source ~/.zshrc
         echo "Done"
