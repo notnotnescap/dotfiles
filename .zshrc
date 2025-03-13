@@ -1,5 +1,10 @@
 #! /bin/zsh
 
+# zsh settings
+setopt auto_cd # automatically cd into directories
+setopt auto_pushd # automatically push directories onto the stack
+setopt prompt_subst # enable prompt substitution
+
 # Load zsh theme
 
 zmodload zsh/system
@@ -142,7 +147,6 @@ function parse_git_dirty() {
 }
 
 autoload -U colors && colors
-setopt prompt_subst
 
 ZSH_THEME_GIT_PROMPT_PREFIX="git:("
 ZSH_THEME_GIT_PROMPT_SUFFIX=")"
@@ -303,16 +307,16 @@ getmy() {
         echo "Done"
     fi
 
-    if [ "$1" = "gitconfig"]; then
+    if [ "$1" = "gitconfig" ]; then
         echo "Pulling .gitconfig at $HOME/.gitconfig..."
         curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
         echo "Done"
     fi
 
-    if [ "$1" = "batconfig"] then
+    if [ "$1" = "batconfig" ]; then
         echo "Pulling .config/bat/* at $HOME/.config/bat/..."
         mkdir -p ~/.config/bat
-        curl -f -o ~/.config/bat/ https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/ || echo 'Failed to pull .config/bat/'
+        curl -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
         echo "Done"
     fi
 }
