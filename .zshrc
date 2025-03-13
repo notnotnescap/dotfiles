@@ -303,9 +303,16 @@ getmy() {
         echo "Done"
     fi
 
-    if [ "$1" = "gitconfig"] || [ "$1" = "gc" ]; then
+    if [ "$1" = "gitconfig"]; then
         echo "Pulling .gitconfig at $HOME/.gitconfig..."
         curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
+        echo "Done"
+    fi
+
+    if [ "$1" = "batconfig"] then
+        echo "Pulling .config/bat/* at $HOME/.config/bat/..."
+        mkdir -p ~/.config/bat
+        curl -f -o ~/.config/bat/ https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/ || echo 'Failed to pull .config/bat/'
         echo "Done"
     fi
 }
