@@ -286,25 +286,25 @@ getmy() {
 
     if [ "$1" = "zshrc" ]; then
         echo "Pulling .zshrc at $HOME/.zshrc..."
-        curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.zshrc || echo 'Failed to pull .zshrc'
+        curl -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
         echo "Running zshrc..."
         source ~/.zshrc
         echo "Done"
     fi
 
     if [ "$1" = "clang-format" ] || [ "$1" = "cf" ]; then
-        curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.clang-format || echo 'Failed to clone .clang-format'
+        curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.clang-format || echo 'Failed to clone .clang-format'
         echo "Done"
     fi
 
     if [ "$1" = "gitignore" ] || [ "$1" = "gi" ]; then
-        curl -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.gitignore || echo 'Failed to clone .gitignore'
+        curl -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitignore || echo 'Failed to clone .gitignore'
         echo "Done"
     fi
 
     if [ "$1" = "gitconfig"] || [ "$1" = "gc" ]; then
         echo "Pulling .gitconfig at $HOME/.gitconfig..."
-        curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/master/.gitconfig || echo 'Failed to pull .zshrc'
+        curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
         echo "Done"
     fi
 }
