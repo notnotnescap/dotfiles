@@ -191,6 +191,10 @@ HISTSIZE=15000  # keep at most 15k commands in memory
 SAVEHIST=10000  # keep at most 10k commands in HISTFILE
 HISTFILE=~/.zsh_history
 
+# Keybinds
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+
 # directories
 export tmpdir="/var/tmp"
 export devdir="$HOME/dev"
