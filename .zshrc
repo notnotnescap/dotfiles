@@ -192,8 +192,8 @@ SAVEHIST=10000  # keep at most 10k commands in HISTFILE
 HISTFILE=~/.zsh_history
 
 # Keybinds
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
+bindkey '^[[1;5D' backward-word # Ctrl + Left Arrow
 
 # directories
 export tmpdir="/var/tmp"
