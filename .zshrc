@@ -302,26 +302,26 @@ getmy() {
     fi
 
     if [ "$1" = "clang-format" ] || [ "$1" = "cf" ]; then
-        curl -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.clang-format || echo 'Failed to clone .clang-format'
+        curl -H 'Cache-Control: no-cache' -f -o .clang-format https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.clang-format || echo 'Failed to clone .clang-format'
         echo "Done"
     fi
 
     if [ "$1" = "gitignore" ] || [ "$1" = "gi" ]; then
-        curl -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitignore || echo 'Failed to clone .gitignore'
+        curl -H 'Cache-Control: no-cache' -f -o .gitignore https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitignore || echo 'Failed to clone .gitignore'
         echo "Done"
     fi
 
     if [ "$1" = "gitconfig" ]; then
         echo "Pulling .gitconfig at $HOME/.gitconfig..."
-        curl -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
+        curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
         echo "Done"
     fi
 
     if [ "$1" = "batconfig" ]; then
         echo "Pulling .config/bat/* at $HOME/.config/bat/..."
         mkdir -p ~/.config/bat/themes
-        curl -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
-        curl -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
+        curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
+        curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
         bat cache --build
         echo "Done"
     fi
