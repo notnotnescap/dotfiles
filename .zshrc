@@ -200,11 +200,13 @@ export tmpdir="/var/tmp"
 export devdir="$HOME/dev"
 export ghdir="$HOME/dev/GitHub"
 export dotfilesdir="$ghdir/dotfiles"
+export ctfdir="/var/tmp/CTF"
 
 alias tmp="cd $tmpdir; pwd"
 alias dev="cd $devdir; pwd"
 alias gh="cd $ghdir; pwd"
 alias dotfiles="cd $dotfilesdir; pwd"
+alias ctf="cd $ctfdir; pwd"
 
 # aliases
 alias c="clear"
