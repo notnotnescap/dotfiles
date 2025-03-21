@@ -200,7 +200,7 @@ export tmpdir="/var/tmp"
 export devdir="$HOME/dev"
 export ghdir="$HOME/dev/GitHub"
 export dotfilesdir="$ghdir/dotfiles"
-export ctfdir="/var/tmp/CTF"
+export ctfdir="~/CTF"
 
 alias tmp="cd $tmpdir; pwd"
 alias dev="cd $devdir; pwd"
@@ -354,6 +354,9 @@ rmcd() {
     fi
 }
 
+uzip() {
+    unzip $@
+}
 
 # Load local aliases (if the file exists)
 if [ -f "$HOME/.zshrc_local" ]; then
