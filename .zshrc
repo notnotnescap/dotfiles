@@ -274,11 +274,16 @@ if [[ "$(uname)" == "Darwin" ]]; then
             command brew "$@"
         fi
     }
+
+    st() {
+        command stat -x "$@"
+    }
 fi
 
 # linux specific
 if [[ "$(uname)" == "Linux" ]]; then
     alias pbcopy='xclip -selection clipboard'
+    alias st="stat"
 fi
 
 # custom functions
