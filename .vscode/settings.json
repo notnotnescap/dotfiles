@@ -1,7 +1,4 @@
 {
-    "files.associations": {
-        "stdio.h": "c"
-    },
     "workbench.colorCustomizations": {
         "activityBar.activeBackground": "#265766",
         "activityBar.background": "#265766",
