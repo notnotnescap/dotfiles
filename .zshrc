@@ -359,6 +359,10 @@ rmcd() {
     fi
 }
 
+chx() {
+    sudo chmod +x $1
+}
+
 uzip() {
     unzip $@
 }
