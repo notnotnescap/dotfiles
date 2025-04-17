@@ -165,23 +165,18 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 
 # Loading plugins
 
+# zsh-autosuggestions
 # install : git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Syntax highlighting
 # install : git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-
-# Code::Stats
-# Load Code::Stats API key from a separate file
-if [ "$VS_CODE_TERMINAL" = "true" ]; then
-    echo "\033[0;33mVS Code terminal detected, Code::Stats plugin rejected\033[0m"
-else
-    if [ -f "$HOME/.codestats_api_key" ]; then
-        export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
-        # local Code::Stats plugin
-        # install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
-        source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
-    fi
+# Code::Stats plugin
+# install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
+if [ -f "$HOME/.codestats_api_key" ]; then
+    export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
+    source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
 
 
@@ -190,6 +185,7 @@ export MANPAGER="nvim +Man!"
 HISTSIZE=15000  # keep at most 15k commands in memory
 SAVEHIST=10000  # keep at most 10k commands in HISTFILE
 HISTFILE=~/.zsh_history
+CODESTATS_ENABLED=1
 
 # Keybinds
 bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
@@ -336,6 +332,30 @@ getmy() {
         curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
         bat cache --build
         echo "Done"
+    fi
+}
+
+codestats() {
+    if [ -z "$1" ]; then
+        echo "Usage: codestats <on|off|status>"
+        return 1
+    fi
+    if [ "$1" = "on" ]; then
+        echo "Code::Stats plugin enabled"
+        export CODESTATS_ENABLED=1
+        export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
+    elif [ "$1" = "off" ]; then
+        echo "Code::Stats plugin disabled"
+        export CODESTATS_ENABLED=0
+        export CODESTATS_API_KEY=""
+    elif [ "$1" = "status" ]; then
+        if [ "$CODESTATS_ENABLED" = "1" ]; then
+            echo "Code::Stats plugin is enabled"
+        else
+            echo "Code::Stats plugin is disabled"
+        fi
+    else
+        echo "Usage: codestats <on|off|status>"
     fi
 }
 
