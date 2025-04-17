@@ -5,9 +5,10 @@
 	process = git-lfs filter-process
 [user]
 	signingkey = ~/.ssh/id_rsa.pub
-[includeIf "gitdir:~/dev/GitHub/"]
-	name = notnotnescap
-	email = 97590612+nescapp@users.noreply.github.com
+[includeIf "gitdir:~/dev/GitHub/**"]
+	[user]
+		name = notnotnescap
+		email = 97590612+nescapp@users.noreply.github.com
 [core]
 	excludesfile = ~/.gitignore
 [rerere]

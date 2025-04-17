@@ -324,6 +324,8 @@ getmy() {
     if [ "$1" = "gitconfig" ]; then
         echo "Pulling .gitconfig at $HOME/.gitconfig..."
         curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
+        echo "Pulling .gitconfig-github at $HOME/.gitconfig-github..."
+        curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig-github https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig-github || echo 'Failed to pull .gitconfig-github'
         echo "Done"
     fi
 
