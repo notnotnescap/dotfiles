@@ -47,3 +47,6 @@
 	updateRefs = true
 [merge]
 	conflictstyle = zdiff3
+[alias]
+	aa = add --all --verbose
+	ap = add --patch --verbose
