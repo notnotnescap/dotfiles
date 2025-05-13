@@ -4,6 +4,7 @@
 setopt auto_cd # automatically cd into directories
 setopt auto_pushd # automatically push directories onto the stack
 setopt prompt_subst # enable prompt substitution
+setopt histignorealldups # ignore duplicate commands in history
 
 # Load zsh theme
 
