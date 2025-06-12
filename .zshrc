@@ -193,7 +193,7 @@ bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
 bindkey '^[[1;5D' backward-word # Ctrl + Left Arrow
 
 # directories
-export tmpdir="/var/tmp"
+export tmpdir="$HOME/tmp"
 export devdir="$HOME/dev"
 export ghdir="$HOME/dev/GitHub"
 export dotfilesdir="$ghdir/dotfiles"
