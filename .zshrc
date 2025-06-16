@@ -254,6 +254,7 @@ alias gch='git checkout'
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
     alias o="open ."
+    alias caf="caffeinate -d"
 
     # fix cunit path
     export CPATH=/opt/homebrew/include:$CPATH
