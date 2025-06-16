@@ -225,8 +225,7 @@ alias q10="qalc -i -p 10"
 alias q16="qalc -i -p 16"
 # alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
-alias testzshrc="cp ./.zshrc ~/.zshrc && source ~/.zshrc"
-alias testkitty="cp ./kitty.conf ~/.config/kitty/kitty.conf"
+alias lzshrc="ldf zshrc"
 alias mkvenv="python3 -m venv venv && source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 
@@ -285,11 +284,11 @@ fi
 
 # custom functions
 
-# will pull certain files from the dotfiles repo
-getmy() {
+# pull dotfiles from the github repo
+pulldf() {
     if [ -z "$1" ]; then
-        echo "Usage: getmy <file>
-        Available files:
+        echo "Usage: pulldf <file>
+        Pull any of these files from the repo:
         - zshrc
         - clang-format cf
         - gitignore gi
@@ -298,7 +297,7 @@ getmy() {
     fi
 
     if [ "$1" = "zshrc" ]; then
-        echo "Pulling .zshrc at $HOME/.zshrc..."
+        echo "Pulling .zshrc at $HOME/.zshrc"
         curl -H 'Cache-Control: no-cache' -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
         echo "Running zshrc..."
         source ~/.zshrc
@@ -316,7 +315,7 @@ getmy() {
     fi
 
     if [ "$1" = "gitconfig" ]; then
-        echo "Pulling .gitconfig at $HOME/.gitconfig..."
+        echo "Pulling .gitconfig at $HOME/.gitconfig"
         curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig || echo 'Failed to pull .zshrc'
         echo "Pulling .gitconfig-github at $HOME/.gitconfig-github..."
         curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig-github https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.gitconfig-github || echo 'Failed to pull .gitconfig-github'
@@ -329,6 +328,62 @@ getmy() {
         curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
         curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
         bat cache --build
+        echo "Done"
+    fi
+}
+
+# copies certain files from the local dotfiles repo
+ldf() {
+    if [ -z "$1" ]; then
+        echo "Usage: getdf <file>
+        Get any of these files from the repo:
+        - zshrc
+        - clang-format cf
+        - gitignore gi
+        - gitconfig gc"
+        - kittyconfig kc
+        return 1
+    fi
+
+    if [ "$1" = "zshrc" ]; then
+        echo "Copying .zshrc to $HOME/.zshrc"
+        cp $dotfilesdir/.zshrc $HOME/.zshrc || echo 'Failed to copy .zshrc'
+        echo "Running zshrc..."
+        source $HOME/.zshrc
+        echo "Done"
+    fi
+
+    if [ "$1" = "clang-format" ] || [ "$1" = "cf" ]; then
+        cp $dotfilesdir/.clang-format . || echo 'Failed to copy .clang-format'
+        echo "Done"
+    fi
+
+    if [ "$1" = "gitignore" ] || [ "$1" = "gi" ]; then
+        cp $dotfilesdir/.gitignore . || echo 'Failed to copy .gitignore'
+        echo "Done"
+    fi
+
+    if [ "$1" = "gitconfig" ]; then
+        echo "Copying .gitconfig to $HOME/.gitconfig"
+        cp $dotfilesdir/.gitconfig $HOME/.gitconfig || echo 'Failed to copy .gitconfig'
+        echo "Copying .gitconfig-github to $HOME/.gitconfig-github..."
+        cp $dotfilesdir/.gitconfig-github $HOME/.gitconfig-github || echo 'Failed to copy .gitconfig-github'
+        echo "Done"
+    fi
+
+    if [ "$1" = "batconfig" ]; then
+        echo "Copying .config/bat/* to $HOME/.config/bat/..."
+        mkdir -p ~/.config/bat/themes
+        cp $dotfilesdir/.config/bat/config ~/.config/bat/config || echo 'Failed to copy .config/bat/config'
+        cp $dotfilesdir/.config/bat/themes/Catppuccin\ Mocha.tmTheme ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme || echo 'Failed to copy .config/bat/themes/Catppuccin Mocha.tmTheme'
+        bat cache --build
+        echo "Done"
+    fi
+
+    if [ "$1" = "kittyconfig" ] || [ "$1" = "kc" ]; then
+        echo "Copying kitty config to $HOME/.config/kitty/kitty.conf"
+        mkdir -p $HOME/.config/kitty
+        cp $dotfilesdir/.config/kitty/kitty.conf $HOME/.config/kitty/kitty.conf || echo 'Failed to copy kitty config'
         echo "Done"
     fi
 }
