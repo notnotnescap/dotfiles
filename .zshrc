@@ -205,6 +205,9 @@ CODESTATS_ENABLED=1
 bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
 bindkey '^[[1;5D' backward-word # Ctrl + Left Arrow
 
+# General environment variables
+export PATH="$HOME/.bun/bin:$PATH" # bun
+
 # directories
 export tmpdir="$HOME/tmp"
 export devdir="$HOME/dev"
@@ -264,8 +267,6 @@ alias gba='git branch --all'
 alias gbd='git branch --delete'
 alias gbD='git branch --delete --force'
 alias gch='git checkout'
-
-export PATH="$HOME/.bun/bin:$PATH" # bun
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
