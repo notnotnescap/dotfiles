@@ -164,6 +164,16 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 
 [[ -z "$LS_COLORS" ]] || zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
+# fzf theme
+export FZF_DEFAULT_OPTS=" \
+--color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
+--color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
+--color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
+--color=selected-bg:#45475A \
+--color=border:#313244,label:#CDD6F4"
+export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --bind 'ctrl-t:toggle-preview,ctrl-y:execute-silent(echo -n {} | pbcopy)'"
+
+
 # Loading plugins
 
 # zsh-autosuggestions
@@ -180,8 +190,11 @@ if [ -f "$HOME/.codestats_api_key" ]; then
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
 
+# fzf
+source <(fzf --zsh)
 
-# Settings
+
+# General Settings
 export MANPAGER="nvim +Man!"
 HISTSIZE=15000  # keep at most 15k commands in memory
 SAVEHIST=10000  # keep at most 10k commands in HISTFILE
@@ -212,6 +225,8 @@ alias nf="neofetch"
 alias of="onefetch"
 alias ncdu="ncdu --color dark"
 alias b="btop"
+alias f="fzf -m --height ~100% --border"
+alias ff="fzf --style full --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 alias ez="eza -a --icons --group-directories-first"
 alias et="eza --tree --icons --level=3"
 alias e="eza -la --icons --group-directories-first"
@@ -249,6 +264,8 @@ alias gba='git branch --all'
 alias gbd='git branch --delete'
 alias gbD='git branch --delete --force'
 alias gch='git checkout'
+
+export PATH="$HOME/.bun/bin:$PATH" # bun
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -412,8 +429,21 @@ codestats() {
     fi
 }
 
+# cd to selected directory from fzf
+fd() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m --height ~100% --border) &&
+  cd "$dir"
+}
+
 # make a dir and move into it in one command
 mkcd() {
+    if [ -z "$1" ]; then
+        # a quick way to create a temporary directory
+        local count=$(find . -maxdepth 1 -type d -name "tmp-*" | wc -l | tr -d '[:space:]')
+        mkcd "tmp-$count"
+        return 0
+    fi
     mkdir -p "$1" && cd "$1"
 }
 
