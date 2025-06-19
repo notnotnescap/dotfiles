@@ -1,13 +1,22 @@
 #! /bin/zsh
 
-# zsh settings
+# General Settings
 setopt auto_cd # automatically cd into directories
 setopt auto_pushd # automatically push directories onto the stack
 setopt prompt_subst # enable prompt substitution
 setopt histignorealldups # ignore duplicate commands in history
 
-# Load zsh theme
+export MANPAGER="nvim +Man!"
+HISTSIZE=15000  # keep at most 15k commands in memory
+SAVEHIST=10000  # keep at most 10k commands in HISTFILE
+HISTFILE=~/.zsh_history
+CODESTATS_ENABLED=1
 
+# Keybinds
+bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
+bindkey '^[[1;5D' backward-word # Ctrl + Left Arrow
+
+# Loading zsh theme
 zmodload zsh/system
 autoload -Uz is-at-least
 
@@ -193,18 +202,6 @@ fi
 # fzf
 source <(fzf --zsh)
 
-
-# General Settings
-export MANPAGER="nvim +Man!"
-HISTSIZE=15000  # keep at most 15k commands in memory
-SAVEHIST=10000  # keep at most 10k commands in HISTFILE
-HISTFILE=~/.zsh_history
-CODESTATS_ENABLED=1
-
-# Keybinds
-bindkey '^[[1;5C' forward-word # Ctrl + Right Arrow
-bindkey '^[[1;5D' backward-word # Ctrl + Left Arrow
-
 # General environment variables
 export PATH="$HOME/.bun/bin:$PATH" # bun
 
@@ -236,7 +233,7 @@ alias ea="eza -la --icons --group-directories-first"
 alias l="e"
 alias lt="et"
 alias la="ea"
-alias cf="shuf -i 0-1 -n 1"
+alias cf="shuf -i 0-1 -n 1" # coin flip
 alias q="qalc -i"
 alias q2="qalc -i -p 2"
 alias q10="qalc -i -p 10"
@@ -439,13 +436,28 @@ fd() {
 
 # make a dir and move into it in one command
 mkcd() {
-    if [ -z "$1" ]; then
-        # a quick way to create a temporary directory
-        local count=$(find . -maxdepth 1 -type d -name "tmp-*" | wc -l | tr -d '[:space:]')
-        mkcd "tmp-$count"
-        return 0
+    local dir_name="$1"
+    if [ -z "$dir_name" ]; then
+        # no args is a quick way to create a temporary directory
+        local count
+        count=$(find . -maxdepth 1 -type d -name "tmp-*" 2>/dev/null | wc -l | tr -d '[:space:]')
+        dir_name="tmp-${count:-0}"
     fi
-    mkdir -p "$1" && cd "$1"
+
+    # prevent accidental removal of existing directories
+    if [ -e "$dir_name" ] && [ ! -d "$dir_name" ]; then
+        echo "mkcd: error: '$dir_name' exists but is not a directory." >&2
+        return 1
+    fi
+
+    mkdir -p -- "$dir_name" || {
+        echo "mkcd: error: failed to create directory '$dir_name'." >&2
+        return 1
+    }
+    cd -- "$dir_name" || {
+        echo "mkcd: error: failed to change to directory '$dir_name'." >&2
+        return 1
+    }
 }
 
 # move out of current dir and remove it with confirmation
