@@ -204,6 +204,8 @@ source <(fzf --zsh)
 
 # General environment variables
 export PATH="$HOME/.bun/bin:$PATH" # bun
+export PATH="$HOME/.pixi/bin:$PATH" # pixi
+source $HOME/.local/bin/env # uv
 
 # directories
 export tmpdir="$HOME/tmp"
