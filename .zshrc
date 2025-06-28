@@ -163,7 +163,7 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=")"
 ZSH_THEME_GIT_PROMPT_DIRTY="*"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-PROMPT="%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+PROMPT="%(?:%{$fg_bold[green]%}%1{$%} :%{$fg_bold[red]%}%1{$%} ) %{$fg[cyan]%}%c%{$reset_color%}"
 PROMPT+=' $(git_prompt_info)'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
@@ -240,11 +240,13 @@ alias q="qalc -i"
 alias q2="qalc -i -p 2"
 alias q10="qalc -i -p 10"
 alias q16="qalc -i -p 16"
-# alias cf="find . -type f -name '*.[ch]' ! \(-path '*/lib/*' -o -path '*/build/*'\) -exec clang-format --verbose -style=file -i {} \;"
 alias zshrc="source ~/.zshrc"
 alias lzshrc="ldf zshrc"
-alias mkvenv="python3 -m venv venv && source venv/bin/activate"
+alias mkvenv="uv venv && source .venv/bin/activate"
+alias venv="source .venv/bin/activate || source venv/bin/activate"
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
+alias ytdl='yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]"'
+alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
 
 # git aliases
 alias g='git'
