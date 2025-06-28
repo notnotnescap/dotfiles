@@ -4,6 +4,8 @@
 # .vscode
 
 # Python
+.ruff_cache
 __pycache__/
 *.pyc
+.venv/
 venv/
