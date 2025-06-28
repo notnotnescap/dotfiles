@@ -208,66 +208,66 @@ export PATH="$HOME/.pixi/bin:$PATH" # pixi
 source $HOME/.local/bin/env # uv
 
 # directories
-export tmpdir="$HOME/tmp"
-export devdir="$HOME/dev"
-export ghdir="$HOME/dev/GitHub"
-export dotfilesdir="$ghdir/dotfiles"
 export ctfdir="~/CTF"
+export devdir="$HOME/dev"
+export dotfilesdir="$ghdir/dotfiles"
+export ghdir="$HOME/dev/GitHub"
+export tmpdir="$HOME/tmp"
 
-alias tmp="cd $tmpdir; pwd"
-alias dev="cd $devdir; pwd"
-alias gh="cd $ghdir; pwd"
-alias dotfiles="cd $dotfilesdir; pwd"
 alias ctf="cd $ctfdir; pwd"
+alias dev="cd $devdir; pwd"
+alias dotfiles="cd $dotfilesdir; pwd"
+alias gh="cd $ghdir; pwd"
+alias tmp="cd $tmpdir; pwd"
 
 # aliases
-alias c="clear"
-alias sc="cd ~; clear"
-alias nf="neofetch"
-alias of="onefetch"
-alias ncdu="ncdu --color dark"
 alias b="btop"
+alias c="clear"
+alias cf="shuf -i 0-1 -n 1" # coin flip
+alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
+alias e="eza -a --icons --group-directories-first"
+alias ea="eza -la --icons --group-directories-first"
+alias et="eza --tree --icons --level=3"
 alias f="fzf -m --height ~100% --border"
 alias ff="fzf --style full --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
-alias e="eza -a --icons --group-directories-first"
-alias et="eza --tree --icons --level=3"
-alias ea="eza -la --icons --group-directories-first"
 alias l="e"
-alias lt="et"
 alias la="ea"
-alias cf="shuf -i 0-1 -n 1" # coin flip
-alias q="qalc -i"
-alias q2="qalc -i -p 2"
-alias q10="qalc -i -p 10"
-alias q16="qalc -i -p 16"
-alias zshrc="source ~/.zshrc"
+alias lt="et"
 alias lzshrc="ldf zshrc"
 alias mkvenv="uv venv && source .venv/bin/activate"
+alias ncdu="ncdu --color dark"
+alias nf="neofetch"
+alias of="onefetch"
+alias q="qalc -i"
+alias q10="qalc -i -p 10"
+alias q16="qalc -i -p 16"
+alias q2="qalc -i -p 2"
+alias sc="cd ~; clear"
 alias venv="source .venv/bin/activate || source venv/bin/activate"
-alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 alias ytdl='yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]"'
 alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
+alias zshrc="source ~/.zshrc"
 
 # git aliases
 alias g='git'
 alias ga='git add'
 alias gaa='git add --all --verbose'
 alias gap='git add --patch'
-alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'
+alias gba='git branch --all'
+alias gbD='git branch --delete --force'
+alias gbd='git branch --delete'
 alias gc='git commit -S'
 alias gca='git commit -S -a'
-alias gph='git push'
-alias gpl='git pull'
-alias grs='git restore --staged'
+alias gch='git checkout'
 alias gd='git diff'
 alias gds='git diff --staged'
 alias gl='git log --oneline --graph --decorate --all'
-alias gll='git log --oneline --graph --decorate --all --stat'
 alias gla='git log --graph --decorate --all --stat'
-alias gba='git branch --all'
-alias gbd='git branch --delete'
-alias gbD='git branch --delete --force'
-alias gch='git checkout'
+alias gll='git log --oneline --graph --decorate --all --stat'
+alias gph='git push'
+alias gpl='git pull'
+alias grs='git restore --staged'
+alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
