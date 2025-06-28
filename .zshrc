@@ -359,8 +359,9 @@ ldf() {
         - zshrc
         - clang-format cf
         - gitignore gi
-        - gitconfig gc"
+        - gitconfig gc
         - kittyconfig kc
+        - ruff"
         return 1
     fi
 
@@ -403,6 +404,13 @@ ldf() {
         echo "Copying kitty config to $HOME/.config/kitty/kitty.conf"
         mkdir -p $HOME/.config/kitty
         cp $dotfilesdir/.config/kitty/kitty.conf $HOME/.config/kitty/kitty.conf || echo 'Failed to copy kitty config'
+        echo "Done"
+    fi
+
+    if [ "$1" = "ruff" ]; then
+        echo "Copying ruff.toml to $HOME/.config/ruff/ruff.toml"
+        mkdir -p $HOME/.config/ruff
+        cp $dotfilesdir/.config/ruff/ruff.toml $HOME/.config/ruff/ruff.toml || echo 'Failed to copy ruff.toml'
         echo "Done"
     fi
 }
