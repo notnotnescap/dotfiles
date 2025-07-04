@@ -225,6 +225,7 @@ alias b="btop"
 alias c="clear"
 alias cf="shuf -i 0-1 -n 1" # coin flip
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
+alias d="date -u +%Y-%m-%d\ %H:%M:%S"
 alias e="eza -a --icons --group-directories-first"
 alias ea="eza -la --icons --group-directories-first"
 alias et="eza --tree --icons --level=3"
