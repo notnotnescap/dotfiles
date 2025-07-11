@@ -291,15 +291,15 @@ if [[ "$(uname)" == "Darwin" ]]; then
         fi
     }
 
-    st() {
+    stat() {
         command stat -x "$@"
     }
 fi
 
 # linux specific
 if [[ "$(uname)" == "Linux" ]]; then
-    alias pbcopy='xclip -selection clipboard'
-    alias st="stat"
+    alias pbcopy="xclip -selection clipboard"
+    alias trash="gio trash"
 fi
 
 # custom functions
