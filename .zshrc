@@ -441,10 +441,11 @@ codestats() {
 }
 
 # cd to selected directory from fzf
-fd() {
+cfd() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m --height ~100% --border) &&
   cd "$dir"
+  pwd
 }
 
 # make a dir and move into it in one command
