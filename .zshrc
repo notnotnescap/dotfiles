@@ -174,14 +174,16 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 [[ -z "$LS_COLORS" ]] || zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # fzf theme
-export FZF_DEFAULT_OPTS=" \
---color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
---color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
---color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
---color=selected-bg:#45475A \
---color=border:#313244,label:#CDD6F4"
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --bind 'ctrl-t:toggle-preview,ctrl-y:execute-silent(echo -n {} | pbcopy)'"
-
+if command -v fzf > /dev/null; then
+    export FZF_DEFAULT_OPTS=" \
+    --color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
+    --color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
+    --color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
+    --color=selected-bg:#45475A \
+    --color=border:#313244,label:#CDD6F4"
+    export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --bind 'ctrl-t:toggle-preview,ctrl-y:execute-silent(echo -n {} | pbcopy)'"
+    source <(fzf --zsh)
+fi
 
 # Loading plugins
 
@@ -199,8 +201,6 @@ if [ -f "$HOME/.codestats_api_key" ]; then
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
 
-# fzf
-source <(fzf --zsh)
 
 # General environment variables
 export PATH="$HOME/.bun/bin:$PATH" # bun
@@ -208,11 +208,16 @@ export PATH="$HOME/.pixi/bin:$PATH" # pixi
 source $HOME/.local/bin/env # uv
 
 # directories
-export ctfdir="~/CTF"
 export devdir="$HOME/dev"
 export dotfilesdir="$ghdir/dotfiles"
 export ghdir="$HOME/dev/GitHub"
 export tmpdir="$HOME/tmp"
+if [ -d "$HOME/CTF" ]; then
+    export ctfdir="$HOME/CTF"
+else
+    # if CTF directory is not found, I am likely using a VM
+    export ctfdir="/media/psf/CTF"
+fi
 
 alias ctf="cd $ctfdir; pwd"
 alias dev="cd $devdir; pwd"
@@ -507,8 +512,10 @@ if [ -f "$HOME/.zshrc_local" ]; then
     source "$HOME/.zshrc_local"
 fi
 
-# Load thefuck
-eval $(thefuck --alias)
+# Load thefuck if it is installed
+if command -v thefuck &> /dev/null; then
+    eval "$(thefuck --alias)"
+fi
 
 # Load zoxide
 eval "$(zoxide init zsh)"
