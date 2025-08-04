@@ -220,13 +220,11 @@ source $HOME/.local/bin/env # uv
 # directories
 export devdir="$HOME/dev"
 export dotfilesdir="$ghdir/dotfiles"
-export ghdir="$HOME/dev/GitHub"
 export tmpdir="$HOME/tmp"
-if [ -d "$HOME/CTF" ]; then
+export ghdir="$HOME/dev/GitHub"
+if [ -z "$ctfdir" ]; then
+    # only define ctfdir if it is not already set
     export ctfdir="$HOME/CTF"
-else
-    # if CTF directory is not found, I am likely using a VM
-    export ctfdir="/media/psf/CTF"
 fi
 
 alias ctf="cd $ctfdir; pwd"
