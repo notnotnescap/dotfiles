@@ -1,5 +1,10 @@
 #! /bin/zsh
 
+# Load local zshrc, if the file exists
+if [ -f "$HOME/.zshrc_local" ]; then
+    source "$HOME/.zshrc_local"
+fi
+
 # General Settings
 setopt auto_cd # automatically cd into directories
 setopt auto_pushd # automatically push directories onto the stack
@@ -163,7 +168,12 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=")"
 ZSH_THEME_GIT_PROMPT_DIRTY="*"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-PROMPT="%(?:%{$fg_bold[green]%}%1{$%} :%{$fg_bold[red]%}%1{$%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+# if there is a TAG environment variable, use it in the prompt
+if [[ -n "$TAG" ]]; then
+    PROMPT="%(?:%{$fg_bold[green]%}%1{ ${TAG}%} :%{$fg_bold[red]%}%1{ ${TAG}%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+else
+    PROMPT="%(?:%{$fg_bold[green]%}%1{$%} :%{$fg_bold[red]%}%1{$%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+fi
 PROMPT+=' $(git_prompt_info)'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
@@ -506,11 +516,6 @@ chx() {
 uzip() {
     unzip $@
 }
-
-# Load local aliases (if the file exists)
-if [ -f "$HOME/.zshrc_local" ]; then
-    source "$HOME/.zshrc_local"
-fi
 
 # Load thefuck if it is installed
 if command -v thefuck &> /dev/null; then
