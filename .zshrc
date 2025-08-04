@@ -251,7 +251,6 @@ alias lzshrc="ldf zshrc"
 alias mip="curl https://am.i.mullvad.net/connected"
 alias mkvenv="uv venv && source .venv/bin/activate"
 alias ncdu="ncdu --color dark"
-alias nf="neofetch"
 alias of="onefetch"
 alias q="qalc -i"
 alias q10="qalc -i -p 10"
@@ -262,6 +261,10 @@ alias venv="source .venv/bin/activate || source venv/bin/activate"
 alias ytdl='yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]"'
 alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
 alias zshrc="source ~/.zshrc"
+# if the 'nf' alias is not defined, define it
+if ! alias nf &> /dev/null; then
+    alias nf="neofetch"
+fi
 
 # git aliases
 alias g='git'
