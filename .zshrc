@@ -524,5 +524,7 @@ if command -v thefuck &> /dev/null; then
     eval "$(thefuck --alias)"
 fi
 
-# Load zoxide
-eval "$(zoxide init zsh)"
+# Load zoxide if it is installed
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+fi
