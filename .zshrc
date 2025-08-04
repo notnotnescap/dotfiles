@@ -163,7 +163,7 @@ function parse_git_dirty() {
 
 autoload -U colors && colors
 
-ZSH_THEME_GIT_PROMPT_PREFIX="git:("
+ZSH_THEME_GIT_PROMPT_PREFIX=" ("
 ZSH_THEME_GIT_PROMPT_SUFFIX=")"
 ZSH_THEME_GIT_PROMPT_DIRTY="*"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
@@ -172,13 +172,13 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 if [[ -n "$TAG" ]]; then
     PROMPT="%(?:%{$fg_bold[green]%}%1{ ${TAG}%} :%{$fg_bold[red]%}%1{ ${TAG}%} ) %{$fg[cyan]%}%c%{$reset_color%}"
 else
-    PROMPT="%(?:%{$fg_bold[green]%}%1{$%} :%{$fg_bold[red]%}%1{$%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+    PROMPT="%(?:%{$fg_bold[green]%}%1{ $%} :%{$fg_bold[red]%}%1{ $%} ) %{$fg[cyan]%}%c%{$reset_color%}"
 fi
 PROMPT+=' $(git_prompt_info)'
 
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%} (%{$fg[red]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}%1{✗%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%})%{$fg[yellow]%}%1{•%}"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 
 [[ -z "$LS_COLORS" ]] || zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
