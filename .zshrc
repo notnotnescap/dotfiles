@@ -170,9 +170,9 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 
 # if there is a TAG environment variable, use it in the prompt
 if [[ -n "$TAG" ]]; then
-    PROMPT="%(?:%{$fg_bold[green]%}%1{ ${TAG}%} :%{$fg_bold[red]%}%1{ ${TAG}%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+    PROMPT="%(?:%{$fg_bold[green]%} ${TAG} :%{$fg_bold[red]%} ${TAG} ) %{$fg[cyan]%}%c%{$reset_color%}"
 else
-    PROMPT="%(?:%{$fg_bold[green]%}%1{ $%} :%{$fg_bold[red]%}%1{ $%} ) %{$fg[cyan]%}%c%{$reset_color%}"
+    PROMPT="%(?:%{$fg_bold[green]%} $ :%{$fg_bold[red]%} $ ) %{$fg[cyan]%}%c%{$reset_color%}"
 fi
 PROMPT+=' $(git_prompt_info)'
 
