@@ -215,7 +215,9 @@ fi
 # General environment variables
 export PATH="$HOME/.bun/bin:$PATH" # bun
 export PATH="$HOME/.pixi/bin:$PATH" # pixi
-source $HOME/.local/bin/env # uv
+if [ -f $HOME/.local/bin/env ]; then
+    source $HOME/.local/bin/env # uv
+fi
 
 # directories
 export devdir="$HOME/dev"
