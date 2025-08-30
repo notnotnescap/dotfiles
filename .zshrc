@@ -195,6 +195,10 @@ if command -v fzf > /dev/null; then
     source <(fzf --zsh)
 fi
 
+# Tab Completions
+autoload -U compinit
+compinit
+
 # Loading plugins
 
 # zsh-autosuggestions
@@ -210,7 +214,6 @@ if [ -f "$HOME/.codestats_api_key" ]; then
     export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
-
 
 # General environment variables
 export PATH="$HOME/.bun/bin:$PATH" # bun
