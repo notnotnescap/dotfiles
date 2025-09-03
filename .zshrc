@@ -1,8 +1,14 @@
 #! /bin/zsh
 
-# Load local zshrc, if the file exists
+# Migrate old .zshrc_local to .zshrc.local if it exists (temporary)
 if [ -f "$HOME/.zshrc_local" ]; then
-    source "$HOME/.zshrc_local"
+    mv "$HOME/.zshrc_local" "$HOME/.zshrc.local"
+    echo "Renamed $HOME/.zshrc_local to $HOME/.zshrc.local"
+fi
+
+# Load local zshrc, if the file exists
+if [ -f "$HOME/.zshrc.local" ]; then
+    source "$HOME/.zshrc.local"
 fi
 
 # General Settings
@@ -204,14 +210,25 @@ compinit
 # zsh-autosuggestions
 # install : git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# Syntax highlighting
+# zsh-syntax-highlighting
 # install : git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Code::Stats plugin
 # install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
+
+# Migrate CODESTATS_API_KEY from old file (temporary)
 if [ -f "$HOME/.codestats_api_key" ]; then
-    export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
+    read -r "a?$HOME/.codestats_api_key file detected. Migrate to local zshrc? [y/n] "
+    if [[ "$a" =~ ^[Yy]$ ]]; then
+        echo "export CODESTATS_API_KEY=\"$(cat $HOME/.codestats_api_key | tr -d '\n')\"\n" >> $HOME/.zshrc.local
+        rm $HOME/.codestats_api_key
+        source $HOME/.zshrc
+        echo "Migrated CODESTATS_API_KEY to local zshrc."
+    fi
+fi
+
+if [ -n "$CODESTATS_API_KEY" ]; then
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
 
@@ -499,14 +516,14 @@ mkcd() {
 # move out of current dir and remove it with confirmation
 rmcd() {
     local current_dir=$(pwd)
-    read -r "a? Remove $current_dir ? [y/n] "
+    read -r "a?Remove $current_dir ? [y/n] "
     if [[ "$a" =~ ^[Yy]$ ]]
     then
         cd ..
         if command -v trash > /dev/null 2>&1; then
             trash "$current_dir"
         else
-            read -r "b? 'trash' command not found. Use 'rm -rf' instead? [y/n] "
+            read -r "b?'trash' command not found. Use 'rm -rf' instead? [y/n] "
             if [[ "$b" =~ ^[Yy]$ ]]; then
                 rm -rf "$current_dir"
             else

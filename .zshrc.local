@@ -1,0 +1,5 @@
+#! /bin/zsh
+# local aliases
+
+#export TAG=""
+#export CODESTATS_API_KEY=""
