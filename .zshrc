@@ -349,14 +349,14 @@ pulldf() {
     if [ -z "$1" ]; then
         echo "Usage: pulldf <file>
         Pull any of these files from the repo:
-        - zshrc
+        - zshrc z
         - clang-format cf
         - gitignore gi
         - gitconfig gc"
         return 1
     fi
 
-    if [ "$1" = "zshrc" ]; then
+    if [ "$1" = "zshrc" ] || [ "$1" = "z" ]; then
         echo "Pulling .zshrc at $HOME/.zshrc"
         curl -H 'Cache-Control: no-cache' -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
         echo "Running zshrc..."
@@ -392,12 +392,30 @@ pulldf() {
     fi
 }
 
+_pulldf_completion() {
+    local -a options
+    options=(
+        'zshrc'
+        'z'
+        'clang-format'
+        'cf'
+        'gitignore'
+        'gi'
+        'gitconfig'
+        'gc'
+        'batconfig'
+    )
+    _describe 'pulldf options' options
+}
+
+compdef _pulldf_completion pulldf
+
 # copies certain files from the local dotfiles repo
 ldf() {
     if [ -z "$1" ]; then
         echo "Usage: getdf <file>
         Get any of these files from the repo:
-        - zshrc
+        - zshrc z
         - clang-format cf
         - gitignore gi
         - gitconfig gc
@@ -406,7 +424,12 @@ ldf() {
         return 1
     fi
 
-    if [ "$1" = "zshrc" ]; then
+    # if $1 starts with a dot, remove it
+    if [[ "$1" == .* ]]; then
+        set -- "${1#.}"
+    fi
+
+    if [ "$1" = "zshrc" ] || [ "$1" = "z" ]; then
         echo "Copying .zshrc to $HOME/.zshrc"
         cp $dotfilesdir/.zshrc $HOME/.zshrc || echo 'Failed to copy .zshrc'
         echo "Running zshrc..."
@@ -456,6 +479,27 @@ ldf() {
     fi
 }
 
+_ldf_completion() {
+    local -a options
+    options=(
+        'zshrc'
+        'z'
+        'clang-format'
+        'cf'
+        'gitignore'
+        'gi'
+        'gitconfig'
+        'gc'
+        'batconfig'
+        'kittyconfig'
+        'kc'
+        'ruff'
+    )
+    _describe 'ldf options' options
+}
+
+compdef _ldf_completion ldf
+
 codestats() {
     if [ -z "$1" ]; then
         echo "Usage: codestats <on|off|status>"
@@ -479,6 +523,18 @@ codestats() {
         echo "Usage: codestats <on|off|status>"
     fi
 }
+
+_codestats_completion() {
+    local -a options
+    options=(
+        'on'
+        'off'
+        'status'
+    )
+    _describe 'codestats options' options
+}
+
+compdef _codestats_completion codestats
 
 # cd to selected directory from fzf
 cfd() {
@@ -532,6 +588,15 @@ rmcd() {
             fi
         fi
     fi
+}
+
+# randomly choose one of the arguments
+# example: pick javascript "social life and friends"
+pick() {
+    echo "Hmm..."
+    sleep 2.1
+    local choice=${@:$(shuf -i 1-$# -n 1):1}
+    echo "> $choice"
 }
 
 chx() {
