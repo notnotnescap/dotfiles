@@ -241,11 +241,11 @@ fi
 
 # directories
 export devdir="$HOME/dev"
-export dotfilesdir="$ghdir/dotfiles"
 export tmpdir="$HOME/tmp"
 export ghdir="$HOME/dev/GitHub"
+export dotfilesdir="$ghdir/dotfiles"
 if [ -z "$ctfdir" ]; then
-    # only define ctfdir if it is not already set
+    # only define ctfdir if it is not already set by local zshrc
     export ctfdir="$HOME/CTF"
 fi
 
