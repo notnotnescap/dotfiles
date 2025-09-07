@@ -256,7 +256,7 @@ alias gh="cd $ghdir; pwd"
 alias tmp="cd $tmpdir; pwd"
 
 # aliases
-alias b="btop"
+alias b="btop" # is this too lazy?
 alias c="clear"
 alias cf="shuf -i 0-1 -n 1" # coin flip
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
@@ -356,6 +356,11 @@ pulldf() {
         return 1
     fi
 
+    # if $1 starts with a dot, remove it
+    if [[ "$1" == .* ]]; then
+        set -- "${1#.}"
+    fi
+
     if [ "$1" = "zshrc" ] || [ "$1" = "z" ]; then
         echo "Pulling .zshrc at $HOME/.zshrc"
         curl -H 'Cache-Control: no-cache' -f -o ~/.zshrc https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.zshrc || echo 'Failed to pull .zshrc'
@@ -413,7 +418,7 @@ compdef _pulldf_completion pulldf
 # copies certain files from the local dotfiles repo
 ldf() {
     if [ -z "$1" ]; then
-        echo "Usage: getdf <file>
+        echo "Usage: ldf <file>
         Get any of these files from the repo:
         - zshrc z
         - clang-format cf
@@ -421,6 +426,12 @@ ldf() {
         - gitconfig gc
         - kittyconfig kc
         - ruff"
+        return 1
+    fi
+
+    # check if the local dotfiles directory exists and is not empty
+    if [ ! -d "$dotfilesdir" ] || [ -z "$(ls -A "$dotfilesdir")" ]; then
+        echo "Error: Local dotfiles directory '$dotfilesdir' does not exist or is empty."
         return 1
     fi
 
