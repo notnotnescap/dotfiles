@@ -73,6 +73,9 @@ lint.ignore = [
     "D1",    # Pydocstyle - missing docstring in public module, class, or function
     "FBT003", # Flake8-boolean-trap - boolean position value in function call
     "D203",  # Pydocstyle - one blank line required before class docstring
+    "D400",  # Pydocstyle - first line should end with a period
+    "D415",  # Pydocstyle - first line should end with a period, question mark, or exclamation point
+    "D404",  # Pydocstyle - first word of the docstring should not be "This"
     "D212",  # Pydocstyle - summary line should be immediately after the opening quotes.
     "D401",  # Pydocstyle - Checks for docstring first lines that are not in an imperative mood.
     "S311",  # Flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
