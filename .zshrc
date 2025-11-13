@@ -205,6 +205,11 @@ fi
 autoload -U compinit
 compinit
 
+# atuin
+if command -v atuin &> /dev/null; then
+    eval "$(atuin init zsh)"
+fi
+
 # Loading plugins
 
 # zsh-autosuggestions
