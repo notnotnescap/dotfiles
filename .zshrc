@@ -210,6 +210,11 @@ if command -v atuin &> /dev/null; then
     eval "$(atuin init zsh)"
 fi
 
+# rbenv
+if command -v rbenv &> /dev/null; then
+    eval "$(rbenv init -)"
+fi
+
 # Loading plugins
 
 # zsh-autosuggestions
