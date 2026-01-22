@@ -565,6 +565,35 @@ cfd() {
   pwd
 }
 
+# combine all .md files in current directory into one
+mdcombine() {
+    local output_file="combined.md"
+    if [ -f "$output_file" ]; then
+        echo "Error: $output_file already exists. Please remove it first."
+        return 1
+    fi
+    for file in *.md; do
+        if [ -f "$file" ]; then
+            cat "$file" >> "$output_file"
+            echo -e "\n\n" >> "$output_file"
+        fi
+    done
+    echo "Combined markdown files into $output_file"
+}
+
+# compress video file using ffmpeg
+ffcompress() {
+    if [ -z "$1" ]; then
+        echo "Usage: ffcompress <input_file>"
+        return 1
+    fi
+    local input_file="$1"
+    local output_file="${input_file%.*}_compressed.${input_file##*.}"
+    # ffmpeg -i "$1" -vcodec libx264 -crf 23 "$2"
+    ffmpeg -i "$input_file" -vcodec libx265 -crf 28 -preset fast -acodec aac -b:a 128k "$output_file"
+    echo "Compressed $input_file to $output_file"
+}
+
 # make a dir and move into it in one command
 mkcd() {
     local dir_name="$1"
