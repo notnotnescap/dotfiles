@@ -362,7 +362,11 @@ pulldf() {
         - zshrc z
         - clang-format cf
         - gitignore gi
-        - gitconfig gc"
+        - gitconfig gc
+        - kittyconfig kc
+        - ruff
+        - batconfig
+        - atuin"
         return 1
     fi
 
@@ -397,12 +401,33 @@ pulldf() {
         echo "Done"
     fi
 
+    if [ "$1" = "kittyconfig" ] || [ "$1" = "kc" ]; then
+        echo "Pulling kitty config at $HOME/.config/kitty/kitty.conf"
+        mkdir -p $HOME/.config/kitty
+        curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/kitty/kitty.conf https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/kitty/kitty.conf || echo 'Failed to pull kitty config'
+        echo "Done"
+    fi
+
+    if [ "$1" = "ruff" ]; then
+        echo "Pulling ruff.toml at $HOME/.config/ruff/ruff.toml..."
+        mkdir -p $HOME/.config/ruff
+        curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/ruff/ruff.toml https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/ruff/ruff.toml || echo 'Failed to pull ruff.toml'
+        echo "Done"
+    fi
+
     if [ "$1" = "batconfig" ]; then
         echo "Pulling .config/bat/* at $HOME/.config/bat/..."
         mkdir -p ~/.config/bat/themes
         curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/config https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/config || echo 'Failed to pull .config/bat/'
         curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/bat/themes/Catppuccin%20Mocha.tmTheme || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
         bat cache --build
+        echo "Done"
+    fi
+
+    if [ "$1" = "atuin" ]; then
+        echo "Pulling atuin config at $HOME/.config/atuin/config.toml..."
+        mkdir -p $HOME/.config/atuin
+        curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/atuin/config.toml https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main/.config/atuin/config.toml || echo 'Failed to pull atuin config'
         echo "Done"
     fi
 }
@@ -418,7 +443,11 @@ _pulldf_completion() {
         'gi'
         'gitconfig'
         'gc'
+        'kittyconfig'
+        'kc'
+        'ruff'
         'batconfig'
+        'atuin'
     )
     _describe 'pulldf options' options
 }
@@ -435,7 +464,9 @@ ldf() {
         - gitignore gi
         - gitconfig gc
         - kittyconfig kc
-        - ruff"
+        - ruff
+        - batconfig
+        - atuin"
         return 1
     fi
 
@@ -498,6 +529,22 @@ ldf() {
         cp $dotfilesdir/.config/ruff/ruff.toml $HOME/.config/ruff/ruff.toml || echo 'Failed to copy ruff.toml'
         echo "Done"
     fi
+
+    if [ "$1" = "batconfig" ]; then
+        echo "Copying .config/bat/* to $HOME/.config/bat/..."
+        mkdir -p ~/.config/bat/themes
+        cp $dotfilesdir/.config/bat/config ~/.config/bat/config || echo 'Failed to copy .config/bat/'
+        cp $dotfilesdir/.config/bat/themes/Catppuccin\ Mocha.tmTheme ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme || echo 'Failed to copy .config/bat/themes/Catppuccin Mocha.tmTheme'
+        bat cache --build
+        echo "Done"
+    fi
+
+    if [ "$1" = "atuin" ]; then
+        echo "Copying atuin config to $HOME/.config/atuin/config.toml"
+        mkdir -p $HOME/.config/atuin
+        cp $dotfilesdir/.config/atuin/config.toml $HOME/.config/atuin/config.toml || echo 'Failed to copy atuin config'
+        echo "Done"
+    fi
 }
 
 _ldf_completion() {
@@ -515,6 +562,8 @@ _ldf_completion() {
         'kittyconfig'
         'kc'
         'ruff'
+        'batconfig'
+        'atuin'
     )
     _describe 'ldf options' options
 }
