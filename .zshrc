@@ -207,6 +207,7 @@ compinit
 
 # atuin
 if command -v atuin &> /dev/null; then
+    source $HOME/.atuin/bin/env
     eval "$(atuin init zsh)"
 fi
 
@@ -266,7 +267,6 @@ alias gh="cd $ghdir; pwd"
 alias tmp="cd $tmpdir; pwd"
 
 # aliases
-alias b="btop" # is this too lazy?
 alias c="clear"
 alias cf="shuf -i 0-1 -n 1" # coin flip
 alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
@@ -318,7 +318,9 @@ alias gll='git log --oneline --graph --decorate --all --stat'
 alias gph='git push'
 alias gpl='git pull'
 alias grs='git restore --staged'
+alias gst='git status'
 alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'
+alias lg='lazygit'
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
