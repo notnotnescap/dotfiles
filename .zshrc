@@ -207,7 +207,7 @@ compinit
 
 # atuin
 if command -v atuin &> /dev/null; then
-    source $HOME/.atuin/bin/env
+    [[ -f "$HOME/.atuin/bin/env" ]] && source "$HOME/.atuin/bin/env"
     eval "$(atuin init zsh)"
 fi
 
