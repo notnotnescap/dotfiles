@@ -559,9 +559,12 @@ codestats() {
         return 1
     fi
     if [ "$1" = "on" ]; then
+        if [ -z "$CODESTATS_API_KEY" ]; then
+            echo "Error: CODESTATS_API_KEY is not set. Add it to ~/.zshrc.local"
+            return 1
+        fi
         echo "Code::Stats plugin enabled"
         export CODESTATS_ENABLED=1
-        export CODESTATS_API_KEY=$(cat $HOME/.codestats_api_key)
     elif [ "$1" = "off" ]; then
         echo "Code::Stats plugin disabled"
         export CODESTATS_ENABLED=0
