@@ -33,14 +33,14 @@ if [[ ! $(command -v git) ]]; then
     exit 1
 fi
 
-read -r "a?Intall zsh-autosuggestions and zsh-syntax-highlighting? [Y/n] "
+read -r "a?Install zsh-autosuggestions and zsh-syntax-highlighting? [Y/n] "
 if [[ "$a" =~ ^[Yy]$ || -z "$a" ]]; then
     echo "Installing zsh-autosuggestions and zsh-syntax-highlighting..."
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
     echo "Installed zsh plugins."
 fi
-read -r "a?Intall code-stats-zsh plugin? [Y/n] "
+read -r "a?Install code-stats-zsh plugin? [Y/n] "
 if [[ "$a" =~ ^[Yy]$ || -z "$a" ]]; then
     echo "Installing code-stats-zsh plugin..."
     git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
