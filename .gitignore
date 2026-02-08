@@ -1,11 +1,13 @@
-# General
+# OS
 .DS_Store
-.idea
-# .vscode
+Thumbs.db
 
-# Python
-.ruff_cache
-__pycache__/
-*.pyc
-.venv/
-venv/
+# Editors
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
