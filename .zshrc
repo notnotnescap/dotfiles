@@ -290,6 +290,7 @@ alias q10="qalc -i -p 10"
 alias q16="qalc -i -p 16"
 alias q2="qalc -i -p 2"
 alias sc="cd ~; clear"
+alias uz="unzip"
 alias venv="source .venv/bin/activate || source venv/bin/activate"
 alias ytdl='yt-dlp -f "bv*[vcodec^=avc1][ext=mp4]+ba[ext=m4a]/b[vcodec^=avc1][ext=mp4]"'
 alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
