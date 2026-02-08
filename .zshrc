@@ -19,7 +19,7 @@ setopt histignorealldups # ignore duplicate commands in history
 
 export MANPAGER="nvim +Man!"
 HISTSIZE=15000  # keep at most 15k commands in memory
-SAVEHIST=10000  # keep at most 10k commands in HISTFILE
+SAVEHIST=15000  # keep at most 15k commands in HISTFILE
 HISTFILE=~/.zsh_history
 CODESTATS_ENABLED=1
 
