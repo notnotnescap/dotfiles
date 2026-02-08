@@ -220,10 +220,10 @@ fi
 
 # zsh-autosuggestions
 # install : git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # zsh-syntax-highlighting
 # install : git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Code::Stats plugin
 # install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
@@ -239,7 +239,7 @@ if [ -f "$HOME/.codestats_api_key" ]; then
     fi
 fi
 
-if [ -n "$CODESTATS_API_KEY" ]; then
+if [ -n "$CODESTATS_API_KEY" ] && [[ -f "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh" ]]; then
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
 fi
 
