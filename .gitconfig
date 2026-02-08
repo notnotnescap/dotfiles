@@ -4,11 +4,9 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 [user]
+	name = notnotnescap
+	email = 97590612+nescapp@users.noreply.github.com
 	signingkey = ~/.ssh/id_rsa.pub
-[includeIf "gitdir:~/dev/GitHub/**"]
-	[user]
-		name = notnotnescap
-		email = 97590612+nescapp@users.noreply.github.com
 [core]
 	excludesfile = ~/.gitignore
 [rerere]
@@ -50,3 +48,8 @@
 [alias]
 	aa = add --all --verbose
 	ap = add --patch --verbose
+
+# To use a different identity for a specific directory, create a file
+# (e.g. ~/.gitconfig-work) with [user] name/email, then uncomment:
+# [includeIf "gitdir:~/work/**"]
+# 	path = ~/.gitconfig-work
