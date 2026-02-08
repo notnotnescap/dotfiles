@@ -279,7 +279,7 @@ alias ff="fastfetch"
 alias l="e"
 alias la="ea"
 alias lt="et"
-alias lzshrc="ldf zshrc"
+alias lzshrc="gdf zshrc"
 alias mip="curl https://am.i.mullvad.net/connected"
 alias mkvenv="uv venv && source .venv/bin/activate"
 alias ncdu="ncdu --color dark"
@@ -356,170 +356,98 @@ fi
 
 # custom functions
 
-# pull dotfiles from the github repo
-pulldf() {
-    local file="$1"
+# get dotfile - copies from local repo (default) or pulls from remote (-r)
+# usage: gdf <file> [-r|--remote]
+#         gdf gi [type]  — gitignore with optional project type (python, node, rust, go, c, java, latex)
+gdf() {
+    local remote=0
+    local file=""
+    local gi_type=""
+
+    # parse args
+    for arg in "$@"; do
+        case "$arg" in
+            -r|--remote) remote=1 ;;
+            *)
+                if [ -z "$file" ]; then
+                    file="$arg"
+                else
+                    gi_type="$arg"
+                fi
+                ;;
+        esac
+    done
+
     if [ -z "$file" ]; then
-        echo "Usage: pulldf <file>
-        Pull any of these files from the repo:
-        - zshrc (z)
-        - clang-format (cf)
-        - gitignore (gi)
-        - gitconfig (gc)
-        - kittyconfig (kc)
-        - ruff
-        - batconfig
-        - atuin"
+        echo "Usage: gdf [-r] <file> [type]
+    Get dotfiles from the local repo (default) or remote (-r).
+    Files:
+        zshrc (z)       clang-format (cf)    gitignore (gi [type])
+        gitconfig (gc)  kittyconfig (kc)     ruff
+        batconfig       atuin
+    Gitignore types: python, node, rust, go, c, java, latex"
         return 1
     fi
 
-    # if file starts with a dot, remove it
-    if [[ "$file" == .* ]]; then
-        file="${file#.}"
-    fi
+    # strip leading dot
+    [[ "$file" == .* ]] && file="${file#.}"
 
     local repo_url="https://raw.githubusercontent.com/notnotnescap/dotfiles/refs/heads/main"
 
-    case "$file" in
-        zshrc|z)
-            echo "Pulling .zshrc at $HOME/.zshrc"
-            curl -H 'Cache-Control: no-cache' -f -o ~/.zshrc "$repo_url/.zshrc" || echo 'Failed to pull .zshrc'
-            echo "Running zshrc..."
-            source ~/.zshrc
-            ;;
-        clang-format|cf)
-            curl -H 'Cache-Control: no-cache' -f -o .clang-format "$repo_url/.clang-format" || echo 'Failed to clone .clang-format'
-            ;;
-        gitignore|gi)
-            curl -H 'Cache-Control: no-cache' -f -o .gitignore "$repo_url/.gitignore" || echo 'Failed to clone .gitignore'
-            ;;
-        gitconfig|gc)
-            echo "Pulling .gitconfig at $HOME/.gitconfig"
-            curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig "$repo_url/.gitconfig" || echo 'Failed to pull .gitconfig'
-            echo "Pulling .gitconfig-github at $HOME/.gitconfig-github..."
-            curl -H 'Cache-Control: no-cache' -f -o ~/.gitconfig-github "$repo_url/.gitconfig-github" || echo 'Failed to pull .gitconfig-github'
-            ;;
-        kittyconfig|kc)
-            echo "Pulling kitty config at $HOME/.config/kitty/kitty.conf"
-            mkdir -p $HOME/.config/kitty
-            curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/kitty/kitty.conf "$repo_url/.config/kitty/kitty.conf" || echo 'Failed to pull kitty config'
-            ;;
-        ruff)
-            echo "Pulling ruff.toml at $HOME/.config/ruff/ruff.toml..."
-            mkdir -p $HOME/.config/ruff
-            curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/ruff/ruff.toml "$repo_url/.config/ruff/ruff.toml" || echo 'Failed to pull ruff.toml'
-            ;;
-        batconfig)
-            echo "Pulling .config/bat/* at $HOME/.config/bat/..."
-            mkdir -p ~/.config/bat/themes
-            curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/config "$repo_url/.config/bat/config" || echo 'Failed to pull .config/bat/'
-            curl -H 'Cache-Control: no-cache' -f -o ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme "$repo_url/.config/bat/themes/Catppuccin%20Mocha.tmTheme" || echo 'Failed to pull .config/bat/themes/Catppuccin Mocha.tmTheme'
-            bat cache --build
-            ;;
-        atuin)
-            echo "Pulling atuin config at $HOME/.config/atuin/config.toml..."
-            mkdir -p $HOME/.config/atuin
-            curl -H 'Cache-Control: no-cache' -f -o $HOME/.config/atuin/config.toml "$repo_url/.config/atuin/config.toml" || echo 'Failed to pull atuin config'
-            ;;
-        *)
-            echo "Error: Unknown file '$file'"
-            return 1
-            ;;
-    esac
-
-    echo "Done"
-}
-
-_pulldf_completion() {
-    local -a options
-    options=(
-        'zshrc'
-        'z'
-        'clang-format'
-        'cf'
-        'gitignore'
-        'gi'
-        'gitconfig'
-        'gc'
-        'kittyconfig'
-        'kc'
-        'ruff'
-        'batconfig'
-        'atuin'
-    )
-    _describe 'pulldf options' options
-}
-
-compdef _pulldf_completion pulldf
-
-# copies certain files from the local dotfiles repo
-ldf() {
-    local file="$1"
-    if [ -z "$file" ]; then
-        echo "Usage: ldf <file>
-        Get any of these files from the repo:
-        - zshrc (z)
-        - clang-format (cf)
-        - gitignore (gi)
-        - gitconfig (gc)
-        - kittyconfig (kc)
-        - ruff
-        - batconfig
-        - atuin"
-        return 1
-    fi
-
-    # check if the local dotfiles directory exists and is not empty
-    if [ ! -d "$dotfilesdir" ] || [ -z "$(ls -A "$dotfilesdir")" ]; then
-        echo "Error: Local dotfiles directory '$dotfilesdir' does not exist or is empty."
-        return 1
-    fi
-
-    # if file starts with a dot, remove it
-    if [[ "$file" == .* ]]; then
-        file="${file#.}"
-    fi
+    # helper: get a file from local or remote
+    _gdf_get() {
+        local src="$1" dst="$2"
+        if [ "$remote" -eq 1 ]; then
+            curl -sS -H 'Cache-Control: no-cache' -f -o "$dst" "$repo_url/$src" || { echo "Failed to pull $src"; return 1; }
+        else
+            if [ ! -d "$dotfilesdir" ] || [ -z "$(ls -A "$dotfilesdir")" ]; then
+                echo "Error: Local dotfiles directory '$dotfilesdir' does not exist or is empty. Use -r to pull from remote."
+                return 1
+            fi
+            cp "$dotfilesdir/$src" "$dst" || { echo "Failed to copy $src"; return 1; }
+        fi
+    }
 
     case "$file" in
         zshrc|z)
-            echo "Copying .zshrc to $HOME/.zshrc"
-            cp "$dotfilesdir/.zshrc" "$HOME/.zshrc" || echo 'Failed to copy .zshrc'
-            echo "Running zshrc..."
-            source "$HOME/.zshrc"
+            echo "Getting .zshrc → $HOME/.zshrc"
+            _gdf_get ".zshrc" "$HOME/.zshrc" && { echo "Reloading..."; source "$HOME/.zshrc"; }
             ;;
         clang-format|cf)
-            cp "$dotfilesdir/.clang-format" . || echo 'Failed to copy .clang-format'
+            _gdf_get ".clang-format" "./.clang-format"
             ;;
         gitignore|gi)
-            cp "$dotfilesdir/.gitignore" . || echo 'Failed to copy .gitignore'
+            if [ -n "$gi_type" ]; then
+                _gdf_gitignore "$gi_type"
+                return $?
+            fi
+            _gdf_get ".gitignore" "./.gitignore"
             ;;
         gitconfig|gc)
-            echo "Copying .gitconfig to $HOME/.gitconfig"
-            cp "$dotfilesdir/.gitconfig" "$HOME/.gitconfig" || echo 'Failed to copy .gitconfig'
-            echo "Copying .gitconfig-github to $HOME/.gitconfig-github..."
-            cp "$dotfilesdir/.gitconfig-github" "$HOME/.gitconfig-github" || echo 'Failed to copy .gitconfig-github'
-            ;;
-        batconfig)
-            echo "Copying .config/bat/* to $HOME/.config/bat/..."
-            mkdir -p ~/.config/bat/themes
-            cp "$dotfilesdir/.config/bat/config" ~/.config/bat/config || echo 'Failed to copy .config/bat/config'
-            cp "$dotfilesdir/.config/bat/themes/Catppuccin Mocha.tmTheme" ~/.config/bat/themes/Catppuccin\ Mocha.tmTheme || echo 'Failed to copy .config/bat/themes/Catppuccin Mocha.tmTheme'
-            bat cache --build
+            echo "Getting .gitconfig → $HOME/.gitconfig"
+            _gdf_get ".gitconfig" "$HOME/.gitconfig"
             ;;
         kittyconfig|kc)
-            echo "Copying kitty config to $HOME/.config/kitty/kitty.conf"
+            echo "Getting kitty.conf → $HOME/.config/kitty/kitty.conf"
             mkdir -p "$HOME/.config/kitty"
-            cp "$dotfilesdir/.config/kitty/kitty.conf" "$HOME/.config/kitty/kitty.conf" || echo 'Failed to copy kitty config'
+            _gdf_get ".config/kitty/kitty.conf" "$HOME/.config/kitty/kitty.conf"
             ;;
         ruff)
-            echo "Copying ruff.toml to $HOME/.config/ruff/ruff.toml"
+            echo "Getting ruff.toml → $HOME/.config/ruff/ruff.toml"
             mkdir -p "$HOME/.config/ruff"
-            cp "$dotfilesdir/.config/ruff/ruff.toml" "$HOME/.config/ruff/ruff.toml" || echo 'Failed to copy ruff.toml'
+            _gdf_get ".config/ruff/ruff.toml" "$HOME/.config/ruff/ruff.toml"
+            ;;
+        batconfig)
+            echo "Getting bat config → $HOME/.config/bat/"
+            mkdir -p "$HOME/.config/bat/themes"
+            _gdf_get ".config/bat/config" "$HOME/.config/bat/config"
+            _gdf_get ".config/bat/themes/Catppuccin Mocha.tmTheme" "$HOME/.config/bat/themes/Catppuccin Mocha.tmTheme"
+            bat cache --build
             ;;
         atuin)
-            echo "Copying atuin config to $HOME/.config/atuin/config.toml"
+            echo "Getting atuin config → $HOME/.config/atuin/config.toml"
             mkdir -p "$HOME/.config/atuin"
-            cp "$dotfilesdir/.config/atuin/config.toml" "$HOME/.config/atuin/config.toml" || echo 'Failed to copy atuin config'
+            _gdf_get ".config/atuin/config.toml" "$HOME/.config/atuin/config.toml"
             ;;
         *)
             echo "Error: Unknown file '$file'"
@@ -530,28 +458,45 @@ ldf() {
     echo "Done"
 }
 
-_ldf_completion() {
+# gitignore generator — fetches from github/gitignore templates
+_gdf_gitignore() {
+    local lang="$1"
+    local url=""
+    case "$lang" in
+        python|py)   url="https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore" ;;
+        node|js|ts)  url="https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore" ;;
+        rust|rs)     url="https://raw.githubusercontent.com/github/gitignore/main/Rust.gitignore" ;;
+        go)          url="https://raw.githubusercontent.com/github/gitignore/main/Go.gitignore" ;;
+        c|cpp|c++)   url="https://raw.githubusercontent.com/github/gitignore/main/C.gitignore" ;;
+        java)        url="https://raw.githubusercontent.com/github/gitignore/main/Java.gitignore" ;;
+        latex|tex)   url="https://raw.githubusercontent.com/github/gitignore/main/TeX.gitignore" ;;
+        *)
+            echo "Unknown gitignore type '$lang'. Available: python, node, rust, go, c, java, latex"
+            return 1
+            ;;
+    esac
+    echo "Fetching $lang .gitignore..."
+    curl -sS -f -o .gitignore "$url" || { echo "Failed to fetch gitignore"; return 1; }
+    echo "Created .gitignore for $lang"
+}
+
+_gdf_completion() {
     local -a options
     options=(
-        'zshrc'
-        'z'
-        'clang-format'
-        'cf'
-        'gitignore'
-        'gi'
-        'gitconfig'
-        'gc'
-        'batconfig'
-        'kittyconfig'
-        'kc'
+        'zshrc' 'z'
+        'clang-format' 'cf'
+        'gitignore' 'gi'
+        'gitconfig' 'gc'
+        'kittyconfig' 'kc'
         'ruff'
         'batconfig'
         'atuin'
+        '-r' '--remote'
     )
-    _describe 'ldf options' options
+    _describe 'gdf options' options
 }
 
-compdef _ldf_completion ldf
+compdef _gdf_completion gdf
 
 codestats() {
     if [ -z "$1" ]; then
