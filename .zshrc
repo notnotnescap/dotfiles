@@ -263,7 +263,7 @@ fi
 alias ctf="cd $ctfdir; pwd"
 alias dev="cd $devdir; pwd"
 alias dotfiles="cd $dotfilesdir; pwd"
-alias gh="cd $ghdir; pwd"
+alias ghd="cd $ghdir; pwd"
 alias tmp="cd $tmpdir; pwd"
 
 # aliases
