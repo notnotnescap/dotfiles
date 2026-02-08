@@ -685,10 +685,6 @@ chx() {
     sudo chmod +x $1
 }
 
-uzip() {
-    unzip $@
-}
-
 # Load thefuck if it is installed
 if command -v thefuck &> /dev/null; then
     eval "$(thefuck --alias)"
