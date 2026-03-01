@@ -1,11 +1,5 @@
 #! /bin/zsh
 
-# Migrate old .zshrc_local to .zshrc.local if it exists (temporary)
-if [ -f "$HOME/.zshrc_local" ]; then
-    mv "$HOME/.zshrc_local" "$HOME/.zshrc.local"
-    echo "Renamed $HOME/.zshrc_local to $HOME/.zshrc.local"
-fi
-
 # Load local zshrc, if the file exists
 if [ -f "$HOME/.zshrc.local" ]; then
     source "$HOME/.zshrc.local"
@@ -227,17 +221,6 @@ fi
 
 # Code::Stats plugin
 # install : git clone https://gitlab.com/code-stats/code-stats-zsh.git ~/.zsh/code-stats-zsh
-
-# Migrate CODESTATS_API_KEY from old file (temporary)
-if [ -f "$HOME/.codestats_api_key" ]; then
-    read -r "a?$HOME/.codestats_api_key file detected. Migrate to local zshrc? [y/n] "
-    if [[ "$a" =~ ^[Yy]$ ]]; then
-        echo "export CODESTATS_API_KEY=\"$(cat $HOME/.codestats_api_key | tr -d '\n')\"\n" >> $HOME/.zshrc.local
-        rm $HOME/.codestats_api_key
-        source $HOME/.zshrc
-        echo "Migrated CODESTATS_API_KEY to local zshrc."
-    fi
-fi
 
 if [ -n "$CODESTATS_API_KEY" ] && [[ -f "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh" ]]; then
     source "${HOME}/.zsh/code-stats-zsh/codestats.plugin.zsh"
