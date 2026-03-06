@@ -275,7 +275,7 @@ alias q2="qalc -i -p 2"
 alias sc="cd ~; clear"
 alias uz="unzip"
 alias venv="source .venv/bin/activate || source venv/bin/activate"
-alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
+alias yda="yt-dlp -x --audio-format mp3 --audio-quality 0"
 alias zshrc="source ~/.zshrc"
 # if the 'nf' alias is not defined, define it
 if ! alias nf &> /dev/null; then
@@ -678,21 +678,20 @@ rc() {
     fi
 }
 
-# Usage: ytd <url> [output_name]
-ytd() {
+# Usage: yd <url> [output_name]
+yd() {
     if [[ -z "$1" ]]; then
-        echo "Usage: ytdl <url> [output_name]"
+        echo "Usage: yd <url> [output_name]"
         return 1
     fi
     local url="$1"
     local out="${2:+$2.%(ext)s}"
     yt-dlp \
-        -f "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/bv*[vcodec^=avc1]+ba/b[vcodec^=avc1]/bv+ba/b" \
+        -f "bv+ba/b" \
         --merge-output-format mp4 \
         --recode-video mp4 \
-        --postprocessor-args "ffmpeg:-c:v libx264 -preset medium -crf 18 -c:a aac -b:a 192k -movflags +faststart" \
-        --embed-thumbnail \
-        --embed-metadata \
+        --postprocessor-args "ffmpeg:-c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart" \
+        --no-embed-thumbnail \
         ${out:+-o "$out"} \
         "$url"
 }
