@@ -275,7 +275,6 @@ alias q2="qalc -i -p 2"
 alias sc="cd ~; clear"
 alias uz="unzip"
 alias venv="source .venv/bin/activate || source venv/bin/activate"
-alias ytdl='yt-dlp -f "bv*[vcodec^=avc1][ext=mp4]+ba[ext=m4a]/b[vcodec^=avc1][ext=mp4]"'
 alias ytdla="yt-dlp -x --audio-format mp3 --audio-quality 0"
 alias zshrc="source ~/.zshrc"
 # if the 'nf' alias is not defined, define it
@@ -626,3 +625,74 @@ fi
 if command -v zoxide &> /dev/null; then
     eval "$(zoxide init zsh)"
 fi
+
+# OpenClaw Completion
+source "/Users/e/.openclaw/completions/openclaw.zsh"
+
+# Video re-encoding function for macOS/Windows compatibility
+# Usage: rc <input_video> [output_name]
+# Defaults to H.264 + AAC in MP4 container (most compatible)
+rc() {
+    local input="$1"
+    local output="$2"
+    local codec="h264"
+    
+    if [[ -z "$input" ]]; then
+        echo "Usage: reencode <input_video> [output_name]"
+        echo "Re-encodes video to widely compatible codecs (H.264 + AAC)"
+        return 1
+    fi
+    
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+    
+    # Get filename without extension
+    local basename="${input%.*}"
+    
+    # Use provided name or generate one
+    if [[ -z "$output" ]]; then
+        output="${basename}_(h264).mp4"
+    else
+        # Add codec suffix if not present
+        if [[ "$output" != *"_("*")"* ]]; then
+            output="${output}_(h264)"
+        fi
+        # Ensure .mp4 extension
+        [[ "$output" != *.mp4 ]] && output="${output}.mp4"
+    fi
+    
+    echo "Re-encoding '$input' -> '$output' (H.264 + AAC)"
+    
+    ffmpeg -i "$input" -c:v libx264 -preset medium -crf 23 \
+        -c:a aac -b:a 128k \
+        -movflags +faststart \
+        -y "$output"
+    
+    if [[ $? -eq 0 ]]; then
+        echo "Done. Output: $output"
+    else
+        echo "Error during re-encoding"
+        return 1
+    fi
+}
+
+# Usage: ytd <url> [output_name]
+ytd() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: ytdl <url> [output_name]"
+        return 1
+    fi
+    local url="$1"
+    local out="${2:+$2.%(ext)s}"
+    yt-dlp \
+        -f "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/bv*[vcodec^=avc1]+ba/b[vcodec^=avc1]/bv+ba/b" \
+        --merge-output-format mp4 \
+        --recode-video mp4 \
+        --postprocessor-args "ffmpeg:-c:v libx264 -preset medium -crf 18 -c:a aac -b:a 192k -movflags +faststart" \
+        --embed-thumbnail \
+        --embed-metadata \
+        ${out:+-o "$out"} \
+        "$url"
+}
