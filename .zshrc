@@ -695,3 +695,51 @@ yd() {
         ${out:+-o "$out"} \
         "$url"
 }
+
+# Usage: videotogif <input_video> [output_name] [fps] [width]
+# Defaults: fps=15, width=640 (height auto-scaled)
+videotogif() {
+    local input="$1"
+    local output="$2"
+    local fps="${3:-15}"
+    local width="${4:-640}"
+
+    if [[ -z "$input" ]]; then
+        echo "Usage: togif <input_video> [output_name] [fps] [width]"
+        echo "  fps    — frames per second (default: 15)"
+        echo "  width  — output width in pixels (default: 640, height auto-scaled)"
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    local basename="${input%.*}"
+    [[ -z "$output" ]] && output="${basename}.gif"
+    [[ "$output" != *.gif ]] && output="${output}.gif"
+
+    echo "Converting '$input' -> '$output' (fps=$fps, width=$width)"
+
+    # Two-pass palette approach for best quality
+    local palette="/tmp/togif_palette_$$.png"
+
+    ffmpeg -v warning -i "$input" \
+        -vf "fps=${fps},scale=${width}:-1:flags=lanczos,palettegen=stats_mode=diff" \
+        -y "$palette" && \
+    ffmpeg -v warning -i "$input" -i "$palette" \
+        -lavfi "fps=${fps},scale=${width}:-1:flags=lanczos [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
+        -y "$output"
+
+    local ret=$?
+    rm -f "$palette"
+
+    if [[ $ret -eq 0 ]]; then
+        local size=$(du -sh "$output" | cut -f1)
+        echo "Done. Output: $output ($size)"
+    else
+        echo "Error during conversion"
+        return 1
+    fi
+}
