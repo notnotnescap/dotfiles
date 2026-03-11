@@ -626,9 +626,6 @@ if command -v zoxide &> /dev/null; then
     eval "$(zoxide init zsh)"
 fi
 
-# OpenClaw Completion
-source "/Users/e/.openclaw/completions/openclaw.zsh"
-
 # Video re-encoding function for macOS/Windows compatibility
 # Usage: rc <input_video> [output_name]
 # Defaults to H.264 + AAC in MP4 container (most compatible)
