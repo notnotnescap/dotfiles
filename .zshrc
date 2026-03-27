@@ -234,20 +234,20 @@ if [ -f $HOME/.local/bin/env ]; then
 fi
 
 # directories
-export devdir="$HOME/dev"
-export tmpdir="$HOME/tmp"
-export ghdir="$HOME/dev/GitHub"
-export dotfilesdir="$ghdir/dotfiles"
-if [ -z "$ctfdir" ]; then
+export devd="$HOME/dev"
+export tmpd="$HOME/tmp"
+export ghd="$HOME/dev/GitHub"
+export dfd="$ghd/dotfiles"
+if [ -z "$ctfd" ]; then
     # only define ctfdir if it is not already set by local zshrc
-    export ctfdir="$HOME/CTF"
+    export ctfd="$HOME/CTF"
 fi
 
-alias ctf="cd $ctfdir; pwd"
-alias dev="cd $devdir; pwd"
-alias dotfiles="cd $dotfilesdir; pwd"
-alias ghd="cd $ghdir; pwd"
-alias tmp="cd $tmpdir; pwd"
+alias ctfd="cd $ctfd; pwd"
+alias devd="cd $devdir; pwd"
+alias dfd="cd $dfd; pwd"
+alias ghd="cd $ghd; pwd"
+alias tmpd="cd $tmpd; pwd"
 
 # aliases
 alias c="clear"
@@ -304,7 +304,7 @@ alias gpl='git pull'
 alias grs='git restore --staged'
 alias gst='git status'
 alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'
-alias lg='lazygit'
+alias lzg='lazygit'
 
 # macos specific
 if [[ "$(uname)" == "Darwin" ]]; then
