@@ -259,6 +259,7 @@ alias ea="eza -la --icons --group-directories-first"
 alias et="eza --tree --icons --level=3"
 alias f="fzf -m --height ~100% --border"
 alias ff="fastfetch"
+alias gz="gdf zshrc"
 alias l="e"
 alias la="ea"
 alias lt="et"
@@ -693,16 +694,14 @@ yd() {
         "$url"
 }
 
-# Usage: videotogif <input_video> [output_name] [fps] [width]
-# Defaults: fps=15, width=640 (height auto-scaled)
-videotogif() {
+ff.videotogif() {
     local input="$1"
     local output="$2"
     local fps="${3:-15}"
     local width="${4:-640}"
 
     if [[ -z "$input" ]]; then
-        echo "Usage: togif <input_video> [output_name] [fps] [width]"
+        echo "Usage: ff.videotogif <input_video> [output_name] [fps] [width]"
         echo "  fps    — frames per second (default: 15)"
         echo "  width  — output width in pixels (default: 640, height auto-scaled)"
         return 1
@@ -737,6 +736,48 @@ videotogif() {
         echo "Done. Output: $output ($size)"
     else
         echo "Error during conversion"
+        return 1
+    fi
+}
+
+ff.compress() {
+    local input="$1"
+    local output="$2"
+    local crf="${3:-28}"
+
+    if [[ -z "$input" ]]; then
+        echo "Usage: ff.compress <input_file> [output_name] [crf]"
+        echo "  crf — quality level (lower is better, default: 28)"
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    # Determine fallback output name if none is provided
+    local basename="${input%.*}"
+    local ext="${input##*.}"
+    if [[ -z "$output" ]]; then
+        output="${basename}_compressed.${ext}"
+    fi
+
+    echo "Compressing '$input' -> '$output' (CRF=$crf)"
+
+    # Compress video using libx264 and fast preset, but copy the audio track as-is
+    ffmpeg -v warning -i "$input" \
+        -vcodec libx264 -crf "$crf" -preset fast -c:a copy \
+        -y "$output"
+
+    local ret=$?
+
+    if [[ $ret -eq 0 ]]; then
+        local orig_size=$(du -sh "$input" | cut -f1)
+        local new_size=$(du -sh "$output" | cut -f1)
+        echo "Done. Output: $output ($new_size, was $orig_size)"
+    else
+        echo "Error during compression"
         return 1
     fi
 }
