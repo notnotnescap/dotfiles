@@ -384,11 +384,11 @@ gdf() {
         if [ "$remote" -eq 1 ]; then
             curl -sS -H 'Cache-Control: no-cache' -f -o "$dst" "$repo_url/$src" || { echo "Failed to pull $src"; return 1; }
         else
-            if [ ! -d "$dotfilesdir" ] || [ -z "$(ls -A "$dotfilesdir")" ]; then
-                echo "Error: Local dotfiles directory '$dotfilesdir' does not exist or is empty. Use -r to pull from remote."
+            if [ ! -d "$dfd" ] || [ -z "$(ls -A "$dfd")" ]; then
+                echo "Error: Local dotfiles directory '$dfd' does not exist or is empty. Use -r to pull from remote."
                 return 1
             fi
-            cp "$dotfilesdir/$src" "$dst" || { echo "Failed to copy $src"; return 1; }
+            cp "$dfd/$src" "$dst" || { echo "Failed to copy $src"; return 1; }
         fi
     }
 
@@ -741,13 +741,51 @@ ff.videotogif() {
 }
 
 ff.compress() {
-    local input="$1"
-    local output="$2"
-    local crf="${3:-28}"
+    local input=""
+    local output=""
+    local crf="28"
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                echo "Usage: ff.compress [options]"
+                echo "Options:"
+                echo "  -i, --input <file>    Input video file (can alternatively be a positional argument)"
+                echo "  -o, --output <file>   Output video file (default: <input>_compressed.<ext>)"
+                echo "  --crf <value>         Quality level (lower is better, default: 28)"
+                echo "  -h, --help            Show this help message"
+                return 0
+                ;;
+            -i|--input)
+                input="$2"
+                shift 2
+                ;;
+            -o|--output)
+                output="$2"
+                shift 2
+                ;;
+            --crf)
+                crf="$2"
+                shift 2
+                ;;
+            -*)
+                echo "Unknown option: $1"
+                return 1
+                ;;
+            *)
+                if [[ -z "$input" ]]; then
+                    input="$1"
+                    shift
+                else
+                    echo "Unknown argument: $1"
+                    return 1
+                fi
+                ;;
+        esac
+    done
 
     if [[ -z "$input" ]]; then
-        echo "Usage: ff.compress <input_file> [output_name] [crf]"
-        echo "  crf — quality level (lower is better, default: 28)"
+        echo "Error: No input file provided. Use -h for help."
         return 1
     fi
 
@@ -765,8 +803,8 @@ ff.compress() {
 
     echo "Compressing '$input' -> '$output' (CRF=$crf)"
 
-    # Compress video using libx264 and fast preset, but copy the audio track as-is
-    ffmpeg -v warning -i "$input" \
+    # Compress video using libx264 and fast preset, copy audio track, show progress (-stats)
+    ffmpeg -hide_banner -v warning -stats -i "$input" \
         -vcodec libx264 -crf "$crf" -preset fast -c:a copy \
         -y "$output"
 
@@ -775,9 +813,9 @@ ff.compress() {
     if [[ $ret -eq 0 ]]; then
         local orig_size=$(du -sh "$input" | cut -f1)
         local new_size=$(du -sh "$output" | cut -f1)
-        echo "Done. Output: $output ($new_size, was $orig_size)"
+        echo -e "\nDone. Output: $output ($new_size, was $orig_size)"
     else
-        echo "Error during compression"
+        echo -e "\nError during compression"
         return 1
     fi
 }
