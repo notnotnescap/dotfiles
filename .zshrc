@@ -545,19 +545,6 @@ mdcombine() {
     echo "Combined markdown files into $output_file"
 }
 
-# compress video file using ffmpeg
-ffcompress() {
-    if [ -z "$1" ]; then
-        echo "Usage: ffcompress <input_file>"
-        return 1
-    fi
-    local input_file="$1"
-    local output_file="${input_file%.*}_compressed.${input_file##*.}"
-    # ffmpeg -i "$1" -vcodec libx264 -crf 23 "$2"
-    ffmpeg -i "$input_file" -vcodec libx265 -crf 28 -preset fast -acodec aac -b:a 128k "$output_file"
-    echo "Compressed $input_file to $output_file"
-}
-
 # make a dir and move into it in one command
 mkcd() {
     local dir_name="$1"
@@ -744,17 +731,23 @@ ff.compress() {
     local input=""
     local output=""
     local crf="28"
+    local compress_all=0
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -h|--help)
                 echo "Usage: ff.compress [options]"
                 echo "Options:"
+                echo "  -a, --all             Compress all videos in the current directory"
                 echo "  -i, --input <file>    Input video file (can alternatively be a positional argument)"
                 echo "  -o, --output <file>   Output video file (default: <input>_compressed.<ext>)"
                 echo "  --crf <value>         Quality level (lower is better, default: 28)"
                 echo "  -h, --help            Show this help message"
                 return 0
+                ;;
+            -a|--all)
+                compress_all=1
+                shift
                 ;;
             -i|--input)
                 input="$2"
@@ -783,6 +776,55 @@ ff.compress() {
                 ;;
         esac
     done
+
+    if [[ $compress_all -eq 1 ]]; then
+        setopt localoptions nullglob
+        local files=(*.{mp4,MP4,mkv,mov,avi,webm})
+        local target_files=()
+        
+        for f in $files; do
+            if [[ "$f" != *_compressed.* ]]; then
+                target_files+=("$f")
+            fi
+        done
+
+        local total=${#target_files[@]}
+        if [[ $total -eq 0 ]]; then
+            echo "No video files found to compress."
+            return 0
+        fi
+
+        local current=0
+        for f in "${target_files[@]}"; do
+            ((current++))
+            local percent=$(( current * 100 / total ))
+            local basename="${f%.*}"
+            local ext="${f##*.}"
+            local out="${basename}_compressed.${ext}"
+
+            echo -e "\n[$current/$total ($percent%)] Compressing '$f' -> '$out' (CRF=$crf)"
+
+            # < /dev/null prevents ffmpeg from eating stdin in the loop
+            ffmpeg -hide_banner -v warning -stats -i "$f" \
+                -vcodec libx264 -crf "$crf" -preset fast -c:a copy \
+                -y "$out" < /dev/null
+
+            local ret=$?
+            if [[ $ret -eq 255 || $ret -eq 130 ]]; then
+                echo -e "\nBatch compression canceled."
+                rm -f "$out" # Clean up the incomplete file
+                return 1
+            elif [[ $ret -eq 0 ]]; then
+                local orig_size=$(du -sh "$f" | cut -f1)
+                local new_size=$(du -sh "$out" | cut -f1)
+                echo "Done: $out ($new_size, was $orig_size)"
+            else
+                echo "Error compressing $f"
+            fi
+        done
+        echo -e "\nBatch compression complete."
+        return 0
+    fi
 
     if [[ -z "$input" ]]; then
         echo "Error: No input file provided. Use -h for help."
