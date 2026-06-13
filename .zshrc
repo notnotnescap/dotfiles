@@ -861,3 +861,214 @@ ff.compress() {
         return 1
     fi
 }
+
+ff.trim() {
+    local input=""
+    local start=""
+    local end=""
+    local output=""
+    local accurate=0
+    local fade_in=0
+    local fade_out=0
+    local fade_in_dur="2"
+    local fade_out_dur="2"
+
+    # helper: convert HH:MM:SS or MM:SS or seconds to decimal seconds
+    _ts2sec() {
+        local t="$1"
+        if [[ "$t" == *:* ]]; then
+            local parts=(${(s/:/)t})
+            if [[ ${#parts} -eq 3 ]]; then
+                awk "BEGIN {print ${parts[1]}*3600 + ${parts[2]}*60 + ${parts[3]}}"
+            else
+                awk "BEGIN {print ${parts[1]}*60 + ${parts[2]}}"
+            fi
+        else
+            echo "$t"
+        fi
+    }
+
+    # helper: get video duration in seconds via ffprobe
+    _vid_dur() {
+        ffprobe -v error -show_entries format=duration \
+            -of csv=p=0 "$1" 2>/dev/null
+    }
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                echo "Usage: ff.trim <input> [options] [output]"
+                echo "Trim a video to a time range, optionally with fade in/out."
+                echo ""
+                echo "Positional:"
+                echo "  input        Input video file (first positional arg)"
+                echo "  output       Output file (last positional arg if no flag value follows)"
+                echo "               Default: <input>_trimmed.<ext>"
+                echo ""
+                echo "Options:"
+                echo "  -i <time>    Start timestamp (HH:MM:SS or seconds, default: 0)"
+                echo "  -o <time>    End timestamp (HH:MM:SS or seconds, default: end of video)"
+                echo "  --accurate   Re-encode for frame-accurate cuts"
+                echo "  --fade-in[=n]   Fade in from black/silence (default: 2s)"
+                echo "  --fade-out[=n]  Fade out to black/silence (default: 2s)"
+                echo "               Using --fade-* forces re-encode."
+                echo "  -h, --help   Show this help"
+                echo ""
+                echo "Examples:"
+                echo "  ff.trim video.mp4 -i 00:01:30 -o 00:02:45"
+                echo "  ff.trim video.mp4 -i 10 --fade-in --fade-out   # 10s → end + fades"
+                echo "  ff.trim video.mp4 -o 00:05:00 clip.mp4          # start → 5:00"
+                echo "  ff.trim video.mp4 --fade-in=1.5 --fade-out=3    # whole video + fades"
+                return 0
+                ;;
+            --accurate)
+                accurate=1
+                shift
+                ;;
+            --fade-in=*)
+                fade_in=1
+                fade_in_dur="${1#*=}"
+                shift
+                ;;
+            --fade-in)
+                fade_in=1
+                shift
+                ;;
+            --fade-out=*)
+                fade_out=1
+                fade_out_dur="${1#*=}"
+                shift
+                ;;
+            --fade-out)
+                fade_out=1
+                shift
+                ;;
+            -i)
+                start="$2"
+                shift 2
+                ;;
+            -o)
+                end="$2"
+                shift 2
+                ;;
+            -*)
+                echo "Unknown option: $1"
+                return 1
+                ;;
+            *)
+                if [[ -z "$input" ]]; then
+                    input="$1"
+                elif [[ -z "$output" ]]; then
+                    output="$1"
+                else
+                    echo "Too many positional arguments: $1"
+                    return 1
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [[ -z "$input" ]]; then
+        echo "Error: No input file provided. Use -h for help."
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    # resolve defaults: start → 0, end → video duration
+    if [[ -z "$start" ]]; then
+        start="0"
+    fi
+    if [[ -z "$end" ]]; then
+        end=$(_vid_dur "$input")
+        if [[ -z "$end" ]]; then
+            echo "Error: Could not determine video duration (ffprobe failed)"
+            return 1
+        fi
+    fi
+
+    local basename="${input%.*}"
+    local ext="${input##*.}"
+    [[ -z "$output" ]] && output="${basename}_trimmed.${ext}"
+
+    # fades need re-encode (stream copy can't apply filters)
+    if [[ $fade_in -eq 1 || $fade_out -eq 1 ]]; then
+        accurate=1
+    fi
+
+    # build filter chains if fades are requested
+    local vf=""
+    local af=""
+
+    if [[ $fade_in -eq 1 || $fade_out -eq 1 ]]; then
+        local start_sec=$(_ts2sec "$start")
+        local end_sec=$(_ts2sec "$end")
+        local duration=$(awk "BEGIN {print $end_sec - $start_sec}")
+
+        local vf_parts=()
+        local af_parts=()
+
+        if [[ $fade_in -eq 1 ]]; then
+            vf_parts+=("fade=t=in:st=0:d=${fade_in_dur}")
+            af_parts+=("afade=t=in:st=0:d=${fade_in_dur}")
+        fi
+
+        if [[ $fade_out -eq 1 ]]; then
+            local fade_out_start=$(awk "BEGIN {print $duration - $fade_out_dur}")
+            vf_parts+=("fade=t=out:st=${fade_out_start}:d=${fade_out_dur}")
+            af_parts+=("afade=t=out:st=${fade_out_start}:d=${fade_out_dur}")
+        fi
+
+        vf="${(j:,:)vf_parts}"
+        af="${(j:,:)af_parts}"
+    fi
+
+    # build mode label and time range display
+    local mode="stream copy"
+    local range="${start} → ${end}"
+    [[ $accurate -eq 1 ]] && mode="re-encode"
+    [[ -n "$vf" ]] && mode="${mode} + fades"
+
+    # build ffmpeg seek args (only include -ss/-to if actually trimming)
+    local seek_args=()
+    if [[ "$start" != "0" ]]; then
+        seek_args+=(-ss "$start")
+    fi
+    if [[ -n "$end" ]]; then
+        seek_args+=(-to "$end")
+    fi
+
+    if [[ $accurate -eq 1 ]]; then
+        echo "Trimming '$input' -> '$output' (${range}, ${mode})"
+        local vf_opt=()
+        local af_opt=()
+        [[ -n "$vf" ]] && vf_opt=(-vf "$vf")
+        [[ -n "$af" ]] && af_opt=(-af "$af")
+
+        ffmpeg -hide_banner -v warning -stats -i "$input" \
+            "${seek_args[@]}" \
+            "${vf_opt[@]}" "${af_opt[@]}" \
+            -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k \
+            -movflags +faststart \
+            -y "$output"
+    else
+        echo "Trimming '$input' -> '$output' (${range}, ${mode})"
+        ffmpeg -hide_banner -v warning -stats "${seek_args[@]}" -i "$input" \
+            -c copy -avoid_negative_ts make_zero \
+            -y "$output"
+    fi
+
+    local ret=$?
+
+    if [[ $ret -eq 0 ]]; then
+        local size=$(du -sh "$output" | cut -f1)
+        echo -e "\nDone. Output: $output ($size)"
+    else
+        echo -e "\nError during trim"
+        return 1
+    fi
+}
