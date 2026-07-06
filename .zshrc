@@ -708,10 +708,10 @@ ff.videotogif() {
     # Two-pass palette approach for best quality
     local palette="/tmp/togif_palette_$$.png"
 
-    ffmpeg -v warning -i "$input" \
+    ffmpeg -hide_banner -v warning -stats -i "$input" \
         -vf "fps=${fps},scale=${width}:-1:flags=lanczos,palettegen=stats_mode=diff" \
         -y "$palette" && \
-    ffmpeg -v warning -i "$input" -i "$palette" \
+    ffmpeg -hide_banner -v warning -stats -i "$input" -i "$palette" \
         -lavfi "fps=${fps},scale=${width}:-1:flags=lanczos [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
         -y "$output"
 
@@ -1069,6 +1069,44 @@ ff.trim() {
         echo -e "\nDone. Output: $output ($size)"
     else
         echo -e "\nError during trim"
+        return 1
+    fi
+}
+
+# take a video and convert it to mp4 with h264 + aac for maximum compatibility
+ff.tomp4() {
+    local input="$1"
+    local output="$2"
+
+    if [[ -z "$input" ]]; then
+        echo "Usage: ff.tomp4 <input_video> [output_name]"
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    local basename="${input%.*}"
+    [[ -z "$output" ]] && output="${basename}.mp4"
+    [[ "$output" != *.mp4 ]] && output="${output}.mp4"
+
+    echo "Converting '$input' -> '$output' (H.264 + AAC)"
+
+    ffmpeg -hide_banner -v warning -stats -i "$input" \
+        -c:v libx264 -preset medium -crf 23 \
+        -c:a aac -b:a 128k \
+        -movflags +faststart \
+        -y "$output"
+
+    local ret=$?
+
+    if [[ $ret -eq 0 ]]; then
+        local size=$(du -sh "$output" | cut -f1)
+        echo "Done. Output: $output ($size)"
+    else
+        echo "Error during conversion"
         return 1
     fi
 }
