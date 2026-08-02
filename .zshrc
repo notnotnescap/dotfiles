@@ -1110,3 +1110,85 @@ ff.tomp4() {
         return 1
     fi
 }
+
+# get total frame count of a video
+ff.getframes() {
+    local input="$1"
+
+    if [[ -z "$input" ]]; then
+        echo "Usage: ff.getframes <video>"
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 "$input"
+}
+
+# normalize audio in a video (two-pass loudness normalization)
+ff.normalize() {
+    local input="$1"
+    local output="$2"
+
+    if [[ -z "$input" ]]; then
+        echo "Usage: ff.normalize <input_video> [output_video]"
+        return 1
+    fi
+
+    if [[ ! -f "$input" ]]; then
+        echo "Error: File '$input' not found"
+        return 1
+    fi
+
+    local basename="${input%.*}"
+    [[ -z "$output" ]] && output="${basename}_normalized.mp4"
+    [[ "$output" != *.mp4 ]] && output="${output}.mp4"
+
+    echo "Pass 1: Analyzing loudness..."
+    local json=$(ffmpeg -i "$input" -af loudnorm=print_format=json -f null - 2>&1)
+
+    # Parse JSON output
+    local measured_I=$(echo "$json" | grep -o '"measured_I"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/')
+    local measured_TP=$(echo "$json" | grep -o '"measured_TP"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/')
+    local measured_LRA=$(echo "$json" | grep -o '"measured_LRA"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/')
+    local measured_thresh=$(echo "$json" | grep -o '"measured_thresh"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)"/\1/')
+
+    if [[ -z "$measured_I" ]]; then
+        echo "Error: Failed to analyze audio"
+        return 1
+    fi
+
+    echo "  Measured: I=$measured_I, TP=$measured_TP, LRA=$measured_LRA, thresh=$measured_thresh"
+    echo "Pass 2: Normalizing..."
+
+    ffmpeg -hide_banner -v warning -stats -i "$input" \
+        -af "loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=$measured_I:measured_TP=$measured_TP:measured_LRA=$measured_LRA:measured_thresh=$measured_thresh:offset=0.5:linear=true" \
+        -ar 48000 \
+        -y "$output"
+
+    local ret=$?
+
+    if [[ $ret -eq 0 ]]; then
+        local size=$(du -sh "$output" | cut -f1)
+        echo "Done. Output: $output ($size)"
+    else
+        echo "Error during normalization"
+        return 1
+    fi
+}
+# openclaw tui — open a TUI with an optional model alias
+# usage: ot [model_alias]
+#        ot          -> default model (deepseek)
+#        ot opus     -> openrouter/anthropic/claude-opus-4.6
+#        ot deepseek-pro -> deepseek v4 pro
+ot() {
+    local model="${1:-}"
+    if [[ -n "$model" ]]; then
+        openclaw tui --session "ot-${model}"
+    else
+        openclaw tui
+    fi
+}
