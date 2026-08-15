@@ -313,6 +313,7 @@ alias lzg='lazygit'
 if [[ "$(uname)" == "Darwin" ]]; then
     alias o="open ."
     alias caf="caffeinate -d"
+    alias pwd="pwd | tr -d '\n' | pbcopy; pwd"
 
     # fix cunit path
     export CPATH=/opt/homebrew/include:$CPATH
@@ -342,12 +343,6 @@ if [[ "$(uname)" == "Linux" ]]; then
 fi
 
 # custom functions
-
-pwd() {
-    if command -v pbcopy &> /dev/null; then
-        command pwd | tr -d '\n' | pbcopy
-    fi
-}
 
 # get dotfile - copies from local repo (default) or pulls from remote (-r)
 # usage: gdf <file> [-r|--remote]
