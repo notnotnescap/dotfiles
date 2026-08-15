@@ -252,6 +252,7 @@ alias tmpd="cd $tmpd; pwd"
 # aliases
 alias c="clear"
 alias cf="shuf -i 0-1 -n 1" # coin flip
+alias cwd="pwd | tr -d '\n' | pbcopy; pwd"
 alias d="date -u +%Y-%m-%d\ %H:%M:%S"
 alias e="eza -a --icons --group-directories-first"
 alias ea="eza -la --icons --group-directories-first"
@@ -270,7 +271,6 @@ alias mkvenv="uv venv && source .venv/bin/activate"
 alias ncdu="ncdu --color dark"
 alias of="onefetch"
 alias pf="fzf --style full --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
-alias pwd="pwd | tr -d '\n' | pbcopy; pwd"
 alias q="qalc -i"
 alias q10="qalc -i -p 10"
 alias q16="qalc -i -p 16"
@@ -342,6 +342,12 @@ if [[ "$(uname)" == "Linux" ]]; then
 fi
 
 # custom functions
+
+pwd() {
+    if command -v pbcopy &> /dev/null; then
+        command pwd | tr -d '\n' | pbcopy
+    fi
+}
 
 # get dotfile - copies from local repo (default) or pulls from remote (-r)
 # usage: gdf <file> [-r|--remote]
